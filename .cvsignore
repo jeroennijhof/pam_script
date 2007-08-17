@@ -1,0 +1,16 @@
+.deps
+.libs
+Makefile.in
+aclocal.m4
+autom4te.cache
+config.h
+config.h.in
+config.log
+config.status
+configure
+libtool
+pam_script.la
+pam_script.lo
+pam_script_la-pam_script.lo
+stamp-h1
+
