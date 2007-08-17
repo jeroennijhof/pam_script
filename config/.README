@@ -1,0 +1,3 @@
+This directory contains the GNU autotools helper scripts, and
+this file is just here so the directory gets created when a
+fresh CVS chechout is done.

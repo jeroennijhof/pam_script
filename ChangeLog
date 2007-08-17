@@ -1,0 +1,11 @@
+Do Not Edit!  This is a generated file.
+	You should edit the NEWS file instead.
+
+2005-03-16 13:20  j-nijhof
+
+	* COPYING, Makefile, README, pam_script.c: Initial import.
+
+2005-03-16 13:20  j-nijhof
+
+	* COPYING, Makefile, README, pam_script.c: Initial revision
+
