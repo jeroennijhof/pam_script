@@ -20,13 +20,16 @@
 #include <unistd.h>
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
+#ifdef HAVE_CONFIG
+#  include "config.h"
+#endif
 
 /* --- customize these defines --- */
 
-#define PAM_SCRIPT_AUTH		"/usr/bin/pam_script_auth"
-#define PAM_SCRIPT_PASSWD	"/usr/bin/pam_script_passwd"
-#define PAM_SCRIPT_SES_OPEN	"/usr/bin/pam_script_ses_open"
-#define PAM_SCRIPT_SES_CLOSE	"/usr/bin/pam_script_ses_close"
+#define PAM_SCRIPT_AUTH		"/pam_script_auth"
+#define PAM_SCRIPT_PASSWD	"/pam_script_passwd"
+#define PAM_SCRIPT_SES_OPEN	"/pam_script_ses_open"
+#define PAM_SCRIPT_SES_CLOSE	"/pam_script_ses_close"
 
 /* --- defines --- */
 
@@ -63,7 +66,8 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
     }
 
     retval = pam_get_user(pamh, &user, NULL);
-    snprintf(cmd, BUFSIZE, "%s %s", "$(PAM_SCRIPT_AUTH)", user);
+snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
+	"$(PAM_SCRIPT_AUTH)", user);
     retval = system(cmd);
     if (retval) {
         user = NULL;
@@ -112,7 +116,8 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
      }
 
      if ( flags == PAM_UPDATE_AUTHTOK ) {
-           snprintf(cmd, BUFSIZE, "%s %s", PAM_SCRIPT_PASSWD, user);
+           snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
+		PAM_SCRIPT_PASSWD, user);
            retval = system(cmd);
            if (retval) {
                   user = NULL;
@@ -145,7 +150,8 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
                   return PAM_USER_UNKNOWN;
      }
 
-     snprintf(cmd, BUFSIZE, "%s %s", "$(PAM_SCRIPT_SES_OPEN)", user);
+     snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
+	"$(PAM_SCRIPT_SES_OPEN)", user);
      retval = system(cmd);
      if (retval) {
           user = NULL;
@@ -175,7 +181,8 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
                   return PAM_USER_UNKNOWN;
      }
 
-     snprintf(cmd, BUFSIZE, "%s %s", "$(PAM_SCRIPT_SES_CLOSE)", user);
+     snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
+	"$(PAM_SCRIPT_SES_CLOSE)", user);
      retval = system(cmd);
      if (retval) {
           user = NULL;

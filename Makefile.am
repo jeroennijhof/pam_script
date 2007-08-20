@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.1 2007/08/17 21:29:06 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.2 2007/08/20 22:32:05 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -17,7 +17,7 @@ ACLOCAL_AMFLAGS= -I config
 moduledir = @libdir@
 module_LTLIBRARIES = pam_script.la
 pam_script_la_SOURCES = pam_script.c
-pam_script_la_CFLAGS = $(AM_CFLAGS)
+pam_script_la_CFLAGS = $(AM_CFLAGS) -DPAM_SCRIPT_DIR="\"$(sysconfdir)/\""
 pam_script_la_LDFLAGS = -module -avoid-version
 
 CL: rmChangeLog

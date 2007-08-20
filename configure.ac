@@ -1,9 +1,9 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.1 2007/08/17 21:29:06 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.2 2007/08/20 22:32:05 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
-dnl              R.K. Owen <rk@owen.sj.ca.us>
+dnl              R.K. Owen <rkowen@nersc.gov>
 dnl
 dnl Process this file with autoconf to produce a configure script
 dnl You need autoconf 2.59 or better!
@@ -14,18 +14,21 @@ AC_PREREQ(2.59)
 AC_COPYRIGHT([
 See the included file: COPYING for copyright information.
 ])
-AC_INIT(pam-script, 1.1.0, [jnijhof@nijhofnet.nl,rk@owen.sj.ca.us])
+AC_INIT(pam-script, 1.1.0, [jnijhof@nijhofnet.nl,rkowen@nersc.gov])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE(1.9.6)
 AC_CONFIG_SRCDIR([pam_script.c])
 AC_CONFIG_HEADER([config.h])
+AC_AIX
 
 AM_DISABLE_STATIC
 
+dnl --------------------------------------------------------------------
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
 
+dnl --------------------------------------------------------------------
 # Checks for libraries.
 AC_CHECK_LIB(pam,pam_start)
 AC_CHECK_LIB(pam_misc,pam_misc_setenv)
@@ -58,6 +61,9 @@ AC_C_CONST
 
 dnl --------------------------------------------------------------------
 dnl Checks for library functions.
+AC_FUNC_STAT
+dnl AC_CHECK_FUNCS([snprintf],,
+dnl [AC_MSG_ERROR([*** Sorry, no standard C99 snprintf() function found ***])])
 
 dnl --------------------------------------------------------------------
 dnl Generate made files
