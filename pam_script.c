@@ -17,22 +17,28 @@
 
 /* --- includes --- */
 #include <stdio.h>
-#include <unistd.h>
-#include <security/pam_appl.h>
+#include <stdarg.h>			/* varg... */
+#include <sys/types.h>			/* stat */
+#include <sys/stat.h>			/* stat */
+#include <unistd.h>			/* stat,snprintf */
+#if HAVE_SYSLOG
+#  include <syslog.h>			/* vsyslog */
+#endif
+#include <security/pam_appl.h>		/* pam_* */
 #include <security/pam_modules.h>
-#ifdef HAVE_CONFIG
+#ifdef HAVE_CONFIG_H
 #  include "config.h"
 #endif
 
 /* --- customize these defines --- */
 
 #ifndef PAM_SCRIPT_DIR
-#  define PAM_SCRIPT_DIR	"/usr/bin"
+#  define PAM_SCRIPT_DIR	"/usr/bin/"
 #endif
-#define PAM_SCRIPT_AUTH		"/pam_script_auth"
-#define PAM_SCRIPT_PASSWD	"/pam_script_passwd"
-#define PAM_SCRIPT_SES_OPEN	"/pam_script_ses_open"
-#define PAM_SCRIPT_SES_CLOSE	"/pam_script_ses_close"
+#define PAM_SCRIPT_AUTH		"pam_script_auth"
+#define PAM_SCRIPT_PASSWD	"pam_script_passwd"
+#define PAM_SCRIPT_SES_OPEN	"pam_script_ses_open"
+#define PAM_SCRIPT_SES_CLOSE	"pam_script_ses_close"
 
 /* --- defines --- */
 
@@ -45,6 +51,72 @@
 #define DEFAULT_USER "nobody"
 
 
+#if 0
+/* convenient function to throw into one of the methods below
+ * for setting as a breakpoint for debugging purposes.
+ */
+void pam_script_xxx(void) {
+	int i = 1;
+}
+#endif
+
+/* internal helper functions */
+
+static void pam_script_syslog(int priority, const char *format, ...) {
+	va_list args;
+	va_start(args, format);
+
+#if HAVE_SYSLOG
+	openlog(PACKAGE, LOG_CONS|LOG_PID, LOG_AUTHPRIV);
+	vsyslog(priority, format, args);
+	closelog();
+#endif
+}
+
+static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
+	int retval;
+
+	retval = pam_get_user(pamh, user, NULL);
+	if (retval != PAM_SUCCESS) {
+		fprintf(stderr, "get user returned error: %s",
+			pam_strerror(pamh,retval));
+		return retval;
+	}
+	if (*user == NULL || **user == '\0') {
+		fprintf(stderr, "username not known");
+		retval = pam_set_item(pamh, PAM_USER,
+			(const void *) DEFAULT_USER);
+		if (retval != PAM_SUCCESS)
+		return PAM_USER_UNKNOWN;
+	}
+	return retval;
+}
+
+static int pam_script_exec(const char *script, const char *user, int rv) {
+
+	int retval = PAM_SUCCESS;
+	char cmd[BUFSIZE];
+	struct stat fs;
+
+	/* test for script existence first */
+	snprintf(cmd, BUFSIZE, "%s%s", PAM_SCRIPT_DIR, script);
+	if (stat(cmd, &fs) < 0) {
+		/* stat failure */
+		pam_script_syslog(LOG_ERR,"can not stat %s", cmd);
+		return retval;
+	}
+	if (!(fs.st_mode & S_IXUSR)) {
+		/* script not executable */
+		pam_script_syslog(LOG_ALERT,"script %s not executable", cmd);
+		return retval;
+	}
+
+	snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR, script, user);
+	retval = system(cmd);
+	if (retval)
+		return rv;
+	return PAM_SUCCESS;
+}
 
 /* --- authentication management functions --- */
 
@@ -54,30 +126,11 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
 {
     int retval;
     const char *user=NULL;
-    char cmd[BUFSIZE];
 
-    retval = pam_get_user(pamh, &user, NULL);
-    if (retval != PAM_SUCCESS) {
-	fprintf(stderr, "get user returned error: %s", pam_strerror(pamh,retval));
+    if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
-    }
-    if (user == NULL || *user == '\0') {
-	fprintf(stderr, "username not known");
-	retval = pam_set_item(pamh, PAM_USER, (const void *) DEFAULT_USER);
-	if (retval != PAM_SUCCESS)
-	    return PAM_USER_UNKNOWN;
-    }
 
-    retval = pam_get_user(pamh, &user, NULL);
-snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-	PAM_SCRIPT_AUTH, user);
-    retval = system(cmd);
-    if (retval) {
-        user = NULL;
-        return PAM_AUTH_ERR;
-    }
-    user = NULL;
-    return PAM_SUCCESS;
+    return pam_script_exec(PAM_SCRIPT_AUTH, user, PAM_AUTH_ERR);
 }
 
 PAM_EXTERN
@@ -106,28 +159,11 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
      const char *user = NULL;
      char cmd[BUFSIZE];
 
-     retval = pam_get_user(pamh, &user, NULL);
-     if (retval != PAM_SUCCESS) {
-           fprintf(stderr, "get user returned error: %s", pam_strerror(pamh,retval));
-           return retval;
-     }
-     if (user == NULL || *user == '\0') {
-           fprintf(stderr, "username not known");
-           retval = pam_set_item(pamh, PAM_USER, (const void *) DEFAULT_USER);
-           if (retval != PAM_SUCCESS)
-                  return PAM_USER_UNKNOWN;
-     }
+     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+	return retval;
 
-     if ( flags == PAM_UPDATE_AUTHTOK ) {
-           snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-		PAM_SCRIPT_PASSWD, user);
-           retval = system(cmd);
-           if (retval) {
-                  user = NULL;
-                  return PAM_AUTHTOK_ERR;
-           }
-     }
-     user = NULL;
+     if ( flags == PAM_UPDATE_AUTHTOK )
+	return pam_script_exec(PAM_SCRIPT_PASSWD, user, PAM_AUTHTOK_ERR);
      return PAM_SUCCESS;
 }
 
@@ -141,27 +177,10 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
      const char *user = NULL;
      char cmd[BUFSIZE];
 
-     retval = pam_get_user(pamh, &user, NULL);
-     if (retval != PAM_SUCCESS) {
-           fprintf(stderr, "get user returned error: %s", pam_strerror(pamh,retval));
-           return retval;
-     }
-     if (user == NULL || *user == '\0') {
-           fprintf(stderr, "username not known");
-           retval = pam_set_item(pamh, PAM_USER, (const void *) DEFAULT_USER);
-           if (retval != PAM_SUCCESS)
-                  return PAM_USER_UNKNOWN;
-     }
+     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+	return retval;
 
-     snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-	PAM_SCRIPT_SES_OPEN, user);
-     retval = system(cmd);
-     if (retval) {
-          user = NULL;
-          return PAM_SESSION_ERR;
-     }
-     user = NULL;
-     return PAM_SUCCESS;
+     return pam_script_exec(PAM_SCRIPT_SES_OPEN, user, PAM_SESSION_ERR);
 }
 
 PAM_EXTERN
@@ -172,27 +191,10 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
      const char *user = NULL;
      char cmd[BUFSIZE];
 
-     retval = pam_get_user(pamh, &user, NULL);
-     if (retval != PAM_SUCCESS) {
-           fprintf(stderr, "get user returned error: %s", pam_strerror(pamh,retval));
-           return retval;
-     }
-     if (user == NULL || *user == '\0') {
-           fprintf(stderr, "username not known");
-           retval = pam_set_item(pamh, PAM_USER, (const void *) DEFAULT_USER);
-           if (retval != PAM_SUCCESS)
-                  return PAM_USER_UNKNOWN;
-     }
+     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+	return retval;
 
-     snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-	PAM_SCRIPT_SES_CLOSE, user);
-     retval = system(cmd);
-     if (retval) {
-          user = NULL;
-          return PAM_SESSION_ERR;
-     }
-     user = NULL;
-     return PAM_SUCCESS;
+     return pam_script_exec(PAM_SCRIPT_SES_CLOSE, user, PAM_SESSION_ERR);
 }
 
 /* end of module definition */
