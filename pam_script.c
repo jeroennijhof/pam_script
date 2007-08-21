@@ -26,6 +26,9 @@
 
 /* --- customize these defines --- */
 
+#ifndef PAM_SCRIPT_DIR
+#  define PAM_SCRIPT_DIR	"/usr/bin"
+#endif
 #define PAM_SCRIPT_AUTH		"/pam_script_auth"
 #define PAM_SCRIPT_PASSWD	"/pam_script_passwd"
 #define PAM_SCRIPT_SES_OPEN	"/pam_script_ses_open"
@@ -67,7 +70,7 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
 
     retval = pam_get_user(pamh, &user, NULL);
 snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-	"$(PAM_SCRIPT_AUTH)", user);
+	PAM_SCRIPT_AUTH, user);
     retval = system(cmd);
     if (retval) {
         user = NULL;
@@ -151,7 +154,7 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
      }
 
      snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-	"$(PAM_SCRIPT_SES_OPEN)", user);
+	PAM_SCRIPT_SES_OPEN, user);
      retval = system(cmd);
      if (retval) {
           user = NULL;
@@ -182,7 +185,7 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
      }
 
      snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR,
-	"$(PAM_SCRIPT_SES_CLOSE)", user);
+	PAM_SCRIPT_SES_CLOSE, user);
      retval = system(cmd);
      if (retval) {
           user = NULL;
