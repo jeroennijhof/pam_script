@@ -18,6 +18,7 @@
 /* --- includes --- */
 #include <stdio.h>
 #include <stdarg.h>			/* varg... */
+#include <string.h>			/* strcmp */
 #include <sys/types.h>			/* stat */
 #include <sys/stat.h>			/* stat */
 #include <unistd.h>			/* stat,snprintf */
