@@ -70,6 +70,8 @@ static void pam_script_syslog(int priority, const char *format, ...) {
 	openlog(PACKAGE, LOG_CONS|LOG_PID, LOG_AUTHPRIV);
 	vsyslog(priority, format, args);
 	closelog();
+#else
+	vfprintf(stderr, format, args);
 #endif
 }
 
@@ -78,12 +80,12 @@ static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 
 	retval = pam_get_user(pamh, user, NULL);
 	if (retval != PAM_SUCCESS) {
-		fprintf(stderr, "get user returned error: %s",
+		pam_script_syslog(LOG_ALERT, "pam_get_user returned error: %s",
 			pam_strerror(pamh,retval));
 		return retval;
 	}
 	if (*user == NULL || **user == '\0') {
-		fprintf(stderr, "username not known");
+		pam_script_syslog(LOG_ALERT, "username not known");
 		retval = pam_set_item(pamh, PAM_USER,
 			(const void *) DEFAULT_USER);
 		if (retval != PAM_SUCCESS)
@@ -92,11 +94,26 @@ static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 	return retval;
 }
 
-static int pam_script_exec(const char *script, const char *user, int rv) {
+static int pam_script_exec(const char *script, const char *user, int rv,
+	int argc, const char **argv) {
 
-	int retval = PAM_SUCCESS;
-	char cmd[BUFSIZE];
+	int	retval = PAM_SUCCESS;
+	char	cmd[BUFSIZE];
 	struct stat fs;
+
+	/* check for pam.conf options */
+	while (*argv) {
+		if (!strncmp(*argv,"onerr=",6)) {
+			if (!strcmp(*argv,"onerr=fail"))
+				retval = rv;
+			else if (!strcmp(*argv,"onerr=success"))
+				retval = PAM_SUCCESS;
+			else
+				pam_script_syslog(LOG_ERR,
+					"invalid option: %s", *argv);
+		}
+		argv++;
+	}
 
 	/* test for script existence first */
 	snprintf(cmd, BUFSIZE, "%s%s", PAM_SCRIPT_DIR, script);
@@ -105,9 +122,11 @@ static int pam_script_exec(const char *script, const char *user, int rv) {
 		pam_script_syslog(LOG_ERR,"can not stat %s", cmd);
 		return retval;
 	}
-	if (!(fs.st_mode & S_IXUSR)) {
-		/* script not executable */
-		pam_script_syslog(LOG_ALERT,"script %s not executable", cmd);
+	if ((fs.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH))
+	!= (S_IXUSR|S_IXGRP|S_IXOTH)) {
+		/* script not executable at all levels */
+		pam_script_syslog(LOG_ALERT,
+			"script %s not fully executable", cmd);
 		return retval;
 	}
 
@@ -130,7 +149,7 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-    return pam_script_exec(PAM_SCRIPT_AUTH, user, PAM_AUTH_ERR);
+    return pam_script_exec(PAM_SCRIPT_AUTH, user, PAM_AUTH_ERR, argc, argv);
 }
 
 PAM_EXTERN
@@ -163,7 +182,8 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 	return retval;
 
      if ( flags == PAM_UPDATE_AUTHTOK )
-	return pam_script_exec(PAM_SCRIPT_PASSWD, user, PAM_AUTHTOK_ERR);
+	return pam_script_exec(PAM_SCRIPT_PASSWD, user, PAM_AUTHTOK_ERR,
+		argc, argv);
      return PAM_SUCCESS;
 }
 
@@ -180,7 +200,8 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-     return pam_script_exec(PAM_SCRIPT_SES_OPEN, user, PAM_SESSION_ERR);
+     return pam_script_exec(PAM_SCRIPT_SES_OPEN, user, PAM_SESSION_ERR,
+	argc, argv);
 }
 
 PAM_EXTERN
@@ -194,7 +215,8 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-     return pam_script_exec(PAM_SCRIPT_SES_CLOSE, user, PAM_SESSION_ERR);
+     return pam_script_exec(PAM_SCRIPT_SES_CLOSE, user, PAM_SESSION_ERR,
+	argc, argv);
 }
 
 /* end of module definition */
