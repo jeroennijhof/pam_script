@@ -26,6 +26,9 @@ ssh passwd required	pam_unix.so
 ssh passwd optional	pam_script.so
 --- end pam.conf ---
 
+Debugging:
+Get the pamtest.c program from the pam-dotfile distribution and it can be
+used to step through the module.
 
 Problem/BUGS report:
 If you find any bugs or problems just mail me, Jeroen Nijhof <jnijhof@nijhofnet.nl>
