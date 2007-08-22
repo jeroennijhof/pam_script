@@ -103,7 +103,7 @@ static int pam_script_exec(const char *script, const char *user, int rv,
 	struct stat fs;
 
 	/* check for pam.conf options */
-	while (*argv) {
+	while (argv && *argv) {
 		if (!strncmp(*argv,"onerr=",6)) {
 			if (!strcmp(*argv,"onerr=fail"))
 				retval = rv;
