@@ -7,7 +7,10 @@
 
 ****************************   Release 1.1 ******************************
 pam-script 1.1.0
-	* sources put under the GNU autotools: automake,libtool,autoconf
+	* sources put under the GNU autotools: automake,libtool,autoconf.
+	* test whether the script exists and is executable.
+	* added the pam.conf configure option - onerr=(success|fail)
+	  to set the default behavior when the script test fails.
 
 pam-script 1.0.0
 Mar 01, 2005			Jeroen Nijhof <jnijhof@nijhofnet.nl>

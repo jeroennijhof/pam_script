@@ -1,6 +1,60 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-08-22 10:06  rkowen
+
+	* pam_script.c: Fixed the static PAM info.
+
+2007-08-22 09:46  rkowen
+
+	* pam_script.c: Forgot strcmp() header file.
+
+2007-08-22 08:50  rkowen
+
+	* configure.ac, pam_script.c: Check for vsyslog() and act
+	accordingly.
+
+2007-08-22 08:44  rkowen
+
+	* README: Noted where to get the pamtest.c program from for
+	debugging.
+
+2007-08-22 08:43  rkowen
+
+	* pam_script.c: Added the onerr=(success|fail) pam.conf option to
+	specify what the default behaviour if the scripts are not found or
+	executable.  The scripts need to be executable at all levels
+	(--x--x--x) because never know who will be executing them.  syslog
+	any pam_script_get_user() errors.
+
+2007-08-21 15:07  rkowen
+
+	* pam_script.c: Broke out the common code into static functions. 
+	Test for the script with stat(), and make sure it's executable. 
+	Added syslog support.  Got it generally working.
+
+2007-08-21 11:47  j-nijhof
+
+	* pam_script.c: - Fixed execution of macro for auth, session open
+	and session close.  - Added default value for macro PAM_SCRIPT_DIR
+	if not set.
+
+2007-08-20 15:32  rkowen
+
+	* Makefile, Makefile.am, configure.ac, pam_script.c: The
+	pam_script_* programs are now pointed to by the sysconfdir in the
+	configure script.
+
+2007-08-17 14:32  rkowen
+
+	* .cvsignore, config/.cvsignore: Have CVS ignore some of the
+	generated files.
+
+2007-08-17 14:29  rkowen
+
+	* AUTHORS, INSTALL, Makefile.am, NEWS, configure.ac, cvs2cl.pl,
+	config/.README: Initial draft of autotool configuration files.
+
 2005-03-16 13:20  j-nijhof
 
 	* COPYING, Makefile, README, pam_script.c: Initial import.
