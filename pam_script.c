@@ -226,8 +226,8 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
 
 /* static module data */
 
-struct pam_module _pam_permit_modstruct = {
-    "pam_permit",
+struct pam_module _pam_script_modstruct = {
+    "pam_script",
     pam_sm_authenticate,
     pam_sm_setcred,
     pam_sm_acct_mgmt,
