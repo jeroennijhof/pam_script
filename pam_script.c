@@ -21,7 +21,7 @@
 #include <sys/types.h>			/* stat */
 #include <sys/stat.h>			/* stat */
 #include <unistd.h>			/* stat,snprintf */
-#if HAVE_SYSLOG
+#if HAVE_VSYSLOG
 #  include <syslog.h>			/* vsyslog */
 #endif
 #include <security/pam_appl.h>		/* pam_* */
@@ -66,7 +66,7 @@ static void pam_script_syslog(int priority, const char *format, ...) {
 	va_list args;
 	va_start(args, format);
 
-#if HAVE_SYSLOG
+#if HAVE_VSYSLOG
 	openlog(PACKAGE, LOG_CONS|LOG_PID, LOG_AUTHPRIV);
 	vsyslog(priority, format, args);
 	closelog();

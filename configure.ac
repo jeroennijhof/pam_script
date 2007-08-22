@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.2 2007/08/20 22:32:05 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.3 2007/08/22 15:50:11 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -62,8 +62,17 @@ AC_C_CONST
 dnl --------------------------------------------------------------------
 dnl Checks for library functions.
 AC_FUNC_STAT
-dnl AC_CHECK_FUNCS([snprintf],,
-dnl [AC_MSG_ERROR([*** Sorry, no standard C99 snprintf() function found ***])])
+AC_CHECK_FUNCS([snprintf],,
+[AC_MSG_ERROR([*** Sorry, no standard C99 snprintf() function found ***])])
+AC_CHECK_FUNCS(vsyslog)
+if test $ac_cv_func_vsyslog = no; then
+	# syslog is not in the default libraries.  See if it's in some other.
+	for lib in bsd socket inet; do
+	AC_CHECK_LIB($lib, vsyslog, [AC_DEFINE(HAVE_VSYSLOG)
+		LIBS="$LIBS -l$lib"; break])
+	done
+fi
+
 
 dnl --------------------------------------------------------------------
 dnl Generate made files
