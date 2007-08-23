@@ -147,7 +147,6 @@ static int pam_script_exec(pam_handle_t *pamh, const char *script, const char *u
 	}
 
 	/* Execute external program */
-	snprintf(cmd, BUFSIZE, "%s%s", PAM_SCRIPT_DIR, script);
 	retval = system(cmd);
 	if (retval)
 		return rv;
