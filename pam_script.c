@@ -95,25 +95,28 @@ static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 	return retval;
 }
 
-static int pam_script_exec(const char *script, const char *user, int rv,
-	int argc, const char **argv) {
+static int pam_script_exec(pam_handle_t *pamh, const char *script, const char *user,
+	int rv, int argc, const char **argv) {
 
-	int	retval = PAM_SUCCESS;
-	char	cmd[BUFSIZE];
+	int retval = rv;
+	int i;
+	char cmd[BUFSIZE];
+	const void *rhost = NULL;
+	const void *service = NULL;
+	const void *authtok = NULL;
 	struct stat fs;
 
 	/* check for pam.conf options */
-	while (argv && *argv) {
-		if (!strncmp(*argv,"onerr=",6)) {
-			if (!strcmp(*argv,"onerr=fail"))
+	for (i = 1; i < argc; i++) {
+		if (!strncmp(argv[i],"onerr=",6)) {
+			if (!strcmp(argv[i],"onerr=fail"))
 				retval = rv;
-			else if (!strcmp(*argv,"onerr=success"))
+			else if (!strcmp(argv[i],"onerr=success"))
 				retval = PAM_SUCCESS;
 			else
 				pam_script_syslog(LOG_ERR,
-					"invalid option: %s", *argv);
+					"invalid option: %s", argv[i]);
 		}
-		argv++;
 	}
 
 	/* test for script existence first */
@@ -131,7 +134,20 @@ static int pam_script_exec(const char *script, const char *user, int rv,
 		return retval;
 	}
 
-	snprintf(cmd, BUFSIZE, "%s%s %s", PAM_SCRIPT_DIR, script, user);
+	/* Get PAM environment and place it in our environment */
+	setenv("PAM_USER", user, 1);
+	if (pam_get_item(pamh, PAM_RHOST, &rhost) == PAM_SUCCESS) {
+		setenv("PAM_RHOST", (const char *)rhost, 1);
+ 	}
+	if (pam_get_item(pamh, PAM_SERVICE, &service) == PAM_SUCCESS) {
+		setenv("PAM_SERVICE", (const char *)service, 1);
+	}
+	if (pam_get_item(pamh, PAM_AUTHTOK, &authtok) == PAM_SUCCESS) {
+		setenv("PAM_AUTHTOK", (const char *)authtok, 1);
+	}
+
+	/* Execute external program */
+	snprintf(cmd, BUFSIZE, "%s%s", PAM_SCRIPT_DIR, script);
 	retval = system(cmd);
 	if (retval)
 		return rv;
@@ -150,7 +166,7 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-    return pam_script_exec(PAM_SCRIPT_AUTH, user, PAM_AUTH_ERR, argc, argv);
+    return pam_script_exec(pamh, PAM_SCRIPT_AUTH, user, PAM_AUTH_ERR, argc, argv);
 }
 
 PAM_EXTERN
@@ -183,7 +199,7 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 	return retval;
 
      if ( flags == PAM_UPDATE_AUTHTOK )
-	return pam_script_exec(PAM_SCRIPT_PASSWD, user, PAM_AUTHTOK_ERR,
+	return pam_script_exec(pamh, PAM_SCRIPT_PASSWD, user, PAM_AUTHTOK_ERR,
 		argc, argv);
      return PAM_SUCCESS;
 }
@@ -201,7 +217,7 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-     return pam_script_exec(PAM_SCRIPT_SES_OPEN, user, PAM_SESSION_ERR,
+     return pam_script_exec(pamh, PAM_SCRIPT_SES_OPEN, user, PAM_SESSION_ERR,
 	argc, argv);
 }
 
@@ -216,7 +232,7 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-     return pam_script_exec(PAM_SCRIPT_SES_CLOSE, user, PAM_SESSION_ERR,
+     return pam_script_exec(pamh, PAM_SCRIPT_SES_CLOSE, user, PAM_SESSION_ERR,
 	argc, argv);
 }
 
