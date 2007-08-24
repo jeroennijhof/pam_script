@@ -1,0 +1,17 @@
+Source: pam-script
+Priority: optional
+Maintainer: R.K. Owen <rkowen@nersc.gov>
+Build-Depends: debhelper (>= 4.0.0), autotools-dev
+Standards-Version: 3.6.2
+Section: libs
+
+Package: pam-script-module
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libpam0g, libpam-modules
+Suggests: libpam-doc
+Description: a PAM module that can invoke scripts within the PAM stack
+ pam-script allows you to execute scripts during  authorization,  passwd
+ changes, and on session opening or closing; which can affect the PAM stack
+ if desired.
+

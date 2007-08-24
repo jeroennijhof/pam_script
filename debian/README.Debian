@@ -1,0 +1,11 @@
+pam-script for Debian
+---------------------
+
+The pam-script module is placed in /lib/security/
+and the scripts are in /etc/pam-script/
+to include pam-script.so edit /etc/pam.d/common-*
+
+Run script -c "dpkg-buildpackage -rfakeroot"
+in the source directory above this one.
+
+ -- R.K. Owen <rkowen@nersc.gov>, Thu, 23 Aug 2007 09:03:35 -0700

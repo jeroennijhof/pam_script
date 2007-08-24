@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.2 2007/08/20 22:32:05 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.3 2007/08/24 03:52:20 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -14,11 +14,16 @@
 
 ACLOCAL_AMFLAGS= -I config
 
+man_MANS = debian/pam-script.7
+
 moduledir = @libdir@
 module_LTLIBRARIES = pam_script.la
 pam_script_la_SOURCES = pam_script.c
 pam_script_la_CFLAGS = $(AM_CFLAGS) -DPAM_SCRIPT_DIR="\"$(sysconfdir)/\""
 pam_script_la_LDFLAGS = -module -avoid-version
+
+EXTRA_DIST=					\
+	debian
 
 CL: rmChangeLog
 	@echo "Updating ChangeLog"
@@ -26,6 +31,9 @@ CL: rmChangeLog
 
 rmChangeLog:
 	-@rm -f ChangeLog
+
+dist-hook:
+	-rm -rf `find $(distdir) -name CVS`
 
 help:
 	@echo ""

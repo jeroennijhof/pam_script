@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.3 2007/08/22 15:50:11 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.4 2007/08/24 03:52:20 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -76,5 +76,5 @@ fi
 
 dnl --------------------------------------------------------------------
 dnl Generate made files
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile debian/pam-script.7])
 AC_OUTPUT

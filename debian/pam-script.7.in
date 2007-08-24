@@ -19,7 +19,7 @@
 pam-script \- a PAM module that can invoke scripts within the PAM stack.
 
 .SH SYNOPSIS
-.B pam-script
+.B pam-script.so
 .RI [ onerr=(success|fail) ]
 
 .SH DESCRIPTION

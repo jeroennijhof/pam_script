@@ -1,0 +1,6 @@
+pam-script (1.1.0-1) unstable; urgency=low
+
+  * Initial release Closes: #nnnn  (nnnn is the bug number of your ITP)
+
+ -- R.K. Owen <rkowen@nersc.gov>  Thu, 23 Aug 2007 09:03:35 -0700
+
