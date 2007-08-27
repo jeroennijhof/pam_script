@@ -20,7 +20,7 @@ pam-script \- a PAM module that can invoke scripts within the PAM stack.
 
 .SH SYNOPSIS
 .B pam-script.so
-.RI [ onerr=(success|fail) ]
+.RI [ onerr=(success|fail) ][ dir=/some/path/ ]
 
 .SH DESCRIPTION
 .B pam-script
@@ -47,7 +47,13 @@ denied SSH access to the machine.
 A summary of options is included below.
 .TP
 .B onerr=(success|fail)
-the default behavior if the module can not find or execute the script
+the default behavior if the module can not find or execute the script.
+The default is to fail if the option is not given.
+.TP
+.B dir=/some/path/
+where to find the pam-scripts to invoke for each of the various
+module-types as described below.
+The default is dir=@sysconfdir@ if not given.
 
 List of scripts
 .TP

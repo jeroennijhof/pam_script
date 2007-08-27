@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.5 2007/08/27 21:57:41 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.6 2007/08/27 22:28:21 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -62,8 +62,6 @@ AC_C_CONST
 dnl --------------------------------------------------------------------
 dnl Checks for library functions.
 AC_FUNC_STAT
-AC_CHECK_FUNCS([snprintf],,
-[AC_MSG_ERROR([*** Sorry, no standard C99 snprintf() function found ***])])
 AC_CHECK_FUNCS(vsyslog)
 if test $ac_cv_func_vsyslog = no; then
 	# syslog is not in the default libraries.  See if it's in some other.

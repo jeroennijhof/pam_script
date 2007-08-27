@@ -21,7 +21,7 @@
 #include <string.h>			/* strcmp,strncpy,... */
 #include <sys/types.h>			/* stat */
 #include <sys/stat.h>			/* stat */
-#include <unistd.h>			/* stat,snprintf */
+#include <unistd.h>			/* stat */
 #if HAVE_VSYSLOG
 #  include <syslog.h>			/* vsyslog */
 #endif
@@ -41,7 +41,7 @@
 /* --- customize these defines --- */
 
 #ifndef PAM_SCRIPT_DIR
-#  define PAM_SCRIPT_DIR	"/usr/bin/"
+#  define PAM_SCRIPT_DIR	"/usr/bin"
 #endif
 #define PAM_SCRIPT_AUTH		"pam_script_auth"
 #define PAM_SCRIPT_ACCT		"pam_script_acct"
@@ -127,11 +127,13 @@ static int pam_script_exec(pam_handle_t *pamh,
 	const char *type, const char *script, const char *user,
 	int rv, int argc, const char **argv) {
 
-	int retval = rv;
-	int i;
-	char cmd[BUFSIZE];
+	int	retval = rv,
+		i;
+	char	cmd[BUFSIZE];
 	struct stat fs;
 	const void *envval = NULL;
+
+	strncpy(cmd, PAM_SCRIPT_DIR, BUFSIZE - 1);
 
 	/* check for pam.conf options */
 	for (i = 1; i < argc; i++) {
@@ -144,10 +146,19 @@ static int pam_script_exec(pam_handle_t *pamh,
 				pam_script_syslog(LOG_ERR,
 					"invalid option: %s", argv[i]);
 		}
+		if (!strncmp(argv[i],"dir=",4)) {
+			if (argv[i] + 4) { /* got new scriptdir */
+				strncpy(cmd,argv[i] + 4, BUFSIZE - 2);
+			}
+		}
 	}
 
+	/* strip trailing '/' */
+	if (cmd[strlen(cmd)-1] == '/') cmd[strlen(cmd)-1] = '\0';
+	strcat(cmd,"/");
+	strncat(cmd,script,BUFSIZE-strlen(cmd)-1);
+
 	/* test for script existence first */
-	snprintf(cmd, BUFSIZE, "%s%s", PAM_SCRIPT_DIR, script);
 	if (stat(cmd, &fs) < 0) {
 		/* stat failure */
 		pam_script_syslog(LOG_ERR,"can not stat %s", cmd);

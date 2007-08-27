@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.3 2007/08/24 03:52:20 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.4 2007/08/27 22:28:21 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -19,7 +19,7 @@ man_MANS = debian/pam-script.7
 moduledir = @libdir@
 module_LTLIBRARIES = pam_script.la
 pam_script_la_SOURCES = pam_script.c
-pam_script_la_CFLAGS = $(AM_CFLAGS) -DPAM_SCRIPT_DIR="\"$(sysconfdir)/\""
+pam_script_la_CFLAGS = $(AM_CFLAGS) -DPAM_SCRIPT_DIR="\"$(sysconfdir)\""
 pam_script_la_LDFLAGS = -module -avoid-version
 
 EXTRA_DIST=					\
