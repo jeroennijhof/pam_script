@@ -15,10 +15,10 @@ Options to pam_script.so:
 
 Module-type and Scripts:
 	auth:		pam_script_auth		- username/password handshake
-	account:	(none)			- non-auth account management
+	account:	pam_script_acct		- non-auth account management
+	passwd:		pam_script_passwd	- changing a password
 	session:	pam_script_ses_open	- actions performed before and
 			pam_script_ses_close	  after a session
-	passwd:		pam_script_passwd	- changing a password
 	
 
 Pam.conf example:

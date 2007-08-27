@@ -57,6 +57,11 @@ Executed under
 which handles the authentication stage of establishing the user via some
 challenge-response (i.e. username/password)
 .TP
+.B pam_script_acct
+invoked under
+.I "account"
+module-type for non-authentication based account management.
+.TP
 .B pam_script_passwd
 invoked under
 .I "passwd"
@@ -72,11 +77,9 @@ run after a
 .I "session"
 is first closed.
 
-All the scripts will be passed the
-.I user
-name on the command line
-and several environment variables such as (PAM_RHOST, etc.)
-will be set.
+All the scripts will be passed several environment variables:
+PAM_USER, PAM_RUSER, PAM_RHOST, PAM_SERVICE, PAM_AUTHTOK, and PAM_TTY.
+Nothing will be passed on the command line.
 
 .SH FILES
 .B @libdir@/pam_script.so

@@ -25,6 +25,13 @@
 #if HAVE_VSYSLOG
 #  include <syslog.h>			/* vsyslog */
 #endif
+
+/* enable these module-types */
+#define PAM_SM_AUTH
+#define PAM_SM_ACCOUNT
+#define PAM_SM_SESSION
+#define PAM_SM_PASSWORD
+
 #include <security/pam_appl.h>		/* pam_* */
 #include <security/pam_modules.h>
 #ifdef HAVE_CONFIG_H
@@ -37,16 +44,13 @@
 #  define PAM_SCRIPT_DIR	"/usr/bin/"
 #endif
 #define PAM_SCRIPT_AUTH		"pam_script_auth"
+#define PAM_SCRIPT_ACCT		"pam_script_acct"
 #define PAM_SCRIPT_PASSWD	"pam_script_passwd"
 #define PAM_SCRIPT_SES_OPEN	"pam_script_ses_open"
 #define PAM_SCRIPT_SES_CLOSE	"pam_script_ses_close"
 
 /* --- defines --- */
 
-#define PAM_SM_AUTH
-#define PAM_SM_ACCOUNT
-#define PAM_SM_SESSION
-#define PAM_SM_PASSWORD
 #define PAM_EXTERN	extern
 #define BUFSIZE	128
 #define DEFAULT_USER "nobody"
@@ -181,7 +185,13 @@ PAM_EXTERN
 int pam_sm_acct_mgmt(pam_handle_t *pamh,int flags,int argc
 		     ,const char **argv)
 {
-     return PAM_SUCCESS;
+    int retval;
+    const char *user=NULL;
+
+    if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+	return retval;
+
+    return pam_script_exec(pamh,PAM_SCRIPT_ACCT, user,PAM_AUTH_ERR,argc,argv);
 }
 
 /* --- password management --- */
