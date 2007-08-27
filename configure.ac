@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.4 2007/08/24 03:52:20 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.5 2007/08/27 21:57:41 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -72,6 +72,7 @@ if test $ac_cv_func_vsyslog = no; then
 		LIBS="$LIBS -l$lib"; break])
 	done
 fi
+AC_CHECK_FUNCS([setenv putenv])
 
 
 dnl --------------------------------------------------------------------

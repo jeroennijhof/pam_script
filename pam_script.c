@@ -18,7 +18,7 @@
 /* --- includes --- */
 #include <stdio.h>
 #include <stdarg.h>			/* varg... */
-#include <string.h>			/* strcmp */
+#include <string.h>			/* strcmp,strncpy,... */
 #include <sys/types.h>			/* stat */
 #include <sys/stat.h>			/* stat */
 #include <unistd.h>			/* stat,snprintf */
@@ -55,6 +55,10 @@
 #define BUFSIZE	128
 #define DEFAULT_USER "nobody"
 
+/* --- macros --- */
+#define PAM_SCRIPT_SETENV(key)						\
+	{if (pam_get_item(pamh, key, &envval) == PAM_SUCCESS)		\
+		pam_script_setenv(#key, (const char *)envval);}
 
 #if 0
 /* convenient function to throw into one of the methods below
@@ -80,6 +84,26 @@ static void pam_script_syslog(int priority, const char *format, ...) {
 #endif
 }
 
+static void pam_script_setenv(const char *key, const char *value) {
+#if HAVE_SETENV
+	setenv(key, value, 1);
+#elif HAVE_PUTENV
+	char	 buffer[BUFSIZE],
+		*str;
+	strncpy(buffer,key,BUFSIZE-2);
+	strcat(buffer,"=");
+	strncat(buffer,(value?value:""),BUFSIZE-strlen(buffer)-1);
+	if ((str = (char *) malloc(strlen(buffer)+1)) != NULL) {
+		strcpy(str,buffer);
+		putenv(str);
+	} /* else {
+	     untrapped memory error - just do not add to environment
+	} */
+#else
+#  error Can not set the environment
+#endif
+}
+
 static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 	int retval;
 
@@ -99,16 +123,15 @@ static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 	return retval;
 }
 
-static int pam_script_exec(pam_handle_t *pamh, const char *script, const char *user,
+static int pam_script_exec(pam_handle_t *pamh,
+	const char *type, const char *script, const char *user,
 	int rv, int argc, const char **argv) {
 
 	int retval = rv;
 	int i;
 	char cmd[BUFSIZE];
-	const void *rhost = NULL;
-	const void *service = NULL;
-	const void *authtok = NULL;
 	struct stat fs;
+	const void *envval = NULL;
 
 	/* check for pam.conf options */
 	for (i = 1; i < argc; i++) {
@@ -139,16 +162,13 @@ static int pam_script_exec(pam_handle_t *pamh, const char *script, const char *u
 	}
 
 	/* Get PAM environment and place it in our environment */
-	setenv("PAM_USER", user, 1);
-	if (pam_get_item(pamh, PAM_RHOST, &rhost) == PAM_SUCCESS) {
-		setenv("PAM_RHOST", (const char *)rhost, 1);
- 	}
-	if (pam_get_item(pamh, PAM_SERVICE, &service) == PAM_SUCCESS) {
-		setenv("PAM_SERVICE", (const char *)service, 1);
-	}
-	if (pam_get_item(pamh, PAM_AUTHTOK, &authtok) == PAM_SUCCESS) {
-		setenv("PAM_AUTHTOK", (const char *)authtok, 1);
-	}
+	PAM_SCRIPT_SETENV(PAM_SERVICE);
+	pam_script_setenv("PAM_TYPE", type);
+	pam_script_setenv("PAM_USER", user);
+	PAM_SCRIPT_SETENV(PAM_RUSER);
+	PAM_SCRIPT_SETENV(PAM_RHOST);
+	PAM_SCRIPT_SETENV(PAM_TTY);
+	PAM_SCRIPT_SETENV(PAM_AUTHTOK);
 
 	/* Execute external program */
 	retval = system(cmd);
@@ -169,7 +189,8 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-    return pam_script_exec(pamh, PAM_SCRIPT_AUTH, user, PAM_AUTH_ERR, argc, argv);
+    return pam_script_exec(pamh, "auth", PAM_SCRIPT_AUTH,
+	user, PAM_AUTH_ERR, argc, argv);
 }
 
 PAM_EXTERN
@@ -191,7 +212,8 @@ int pam_sm_acct_mgmt(pam_handle_t *pamh,int flags,int argc
     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-    return pam_script_exec(pamh,PAM_SCRIPT_ACCT, user,PAM_AUTH_ERR,argc,argv);
+    return pam_script_exec(pamh, "account", PAM_SCRIPT_ACCT,
+	user,PAM_AUTH_ERR,argc,argv);
 }
 
 /* --- password management --- */
@@ -208,8 +230,8 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 	return retval;
 
      if ( flags == PAM_UPDATE_AUTHTOK )
-	return pam_script_exec(pamh, PAM_SCRIPT_PASSWD, user, PAM_AUTHTOK_ERR,
-		argc, argv);
+	return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
+		user, PAM_AUTHTOK_ERR, argc, argv);
      return PAM_SUCCESS;
 }
 
@@ -226,8 +248,8 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-     return pam_script_exec(pamh, PAM_SCRIPT_SES_OPEN, user, PAM_SESSION_ERR,
-	argc, argv);
+     return pam_script_exec(pamh, "session", PAM_SCRIPT_SES_OPEN,
+	user, PAM_SESSION_ERR, argc, argv);
 }
 
 PAM_EXTERN
@@ -241,8 +263,8 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
 
-     return pam_script_exec(pamh, PAM_SCRIPT_SES_CLOSE, user, PAM_SESSION_ERR,
-	argc, argv);
+     return pam_script_exec(pamh, "session", PAM_SCRIPT_SES_CLOSE,
+	user, PAM_SESSION_ERR, argc, argv);
 }
 
 /* end of module definition */
