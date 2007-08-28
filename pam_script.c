@@ -58,7 +58,8 @@
 /* --- macros --- */
 #define PAM_SCRIPT_SETENV(key)						\
 	{if (pam_get_item(pamh, key, &envval) == PAM_SUCCESS)		\
-		pam_script_setenv(#key, (const char *)envval);}
+		pam_script_setenv(#key, (const char *) envval);		\
+	else	pam_script_setenv(#key, (const char *) NULL);}
 
 #if 0
 /* convenient function to throw into one of the methods below
@@ -86,7 +87,7 @@ static void pam_script_syslog(int priority, const char *format, ...) {
 
 static void pam_script_setenv(const char *key, const char *value) {
 #if HAVE_SETENV
-	setenv(key, value, 1);
+	setenv(key, (value?value:""), 1);
 #elif HAVE_PUTENV
 	char	 buffer[BUFSIZE],
 		*str;
