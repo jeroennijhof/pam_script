@@ -1,6 +1,39 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-08-28 14:59  rkowen
+
+	* Makefile.am, etc/README, etc/logscript: Added an example
+	pam-script, which logs the PAM_* env.vars to a file.
+
+2007-08-28 14:58  rkowen
+
+	* pam_script.c: Should set the PAM_* env.vars to NULL if not
+	present, else random garbage will be passed along.
+
+2007-08-27 15:28  rkowen
+
+	* Makefile.am, configure.ac, pam_script.c, debian/pam-script.7.in:
+	Added the dir=/some/path/ option to pam_script.so .  Seeing that
+	snprintf() was no longer needed, now that the "complex" string
+	formatting is nicely handled by strcpy() and strcat() and friends,
+	eliminated the configure test for snprintf().
+
+2007-08-27 14:57  rkowen
+
+	* configure.ac, pam_script.c, debian/pam-script.7.in: Expanded the
+	list of env.vars. passed to the scripts.  Aggregated the setenv()
+	code to an internal routine pam_script_setenv() and use setenv() or
+	putenv() depending on their existence.
+
+2007-08-27 11:16  rkowen
+
+	* README, pam_script.c, debian/pam-script.7.in: Added a functioning
+	handler to the "account" module-type; so a script, pam_script_acct,
+	could be called.  Also moved the PAM_SM_* definitions to ahead of
+	the security/pam_module.h header file so the the prototypes for
+	static modules are properly declared.
+
 2007-08-23 20:52  rkowen
 
 	* Makefile.am, configure.ac, debian/README.Debian,
