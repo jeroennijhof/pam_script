@@ -1,6 +1,39 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-08-23 20:52  rkowen
+
+	* Makefile.am, configure.ac, debian/README.Debian,
+	debian/changelog, debian/control, debian/copyright,
+	debian/pam-script-module.dirs, debian/pam-script-module.install,
+	debian/pam-script.7.in, debian/rules: Started the debian packaging.
+
+2007-08-23 12:33  j-nijhof
+
+	* pam_script.c: [no log message]
+
+2007-08-23 12:32  j-nijhof
+
+	* pam_script.c: - fixed segfault at 'check for pam.conf options'
+	part, rewritten it to old style argv handling - added PAM_USER,
+	PAM_RHOST, PAM_SERVICE and PAM_AUTHTOK for use with environment -
+	fixed default retval not PAM_SUCCESS but rv because otherwise
+	everyone can enter the system if the program's are missing.
+
+2007-08-23 08:28  rkowen
+
+	* debian/pam-script.7.in: Added a man page.
+
+2007-08-22 13:47  rkowen
+
+	* pam_script.c: PAM doesn't pass an argv vector if there are no
+	pam.conf options.
+
+2007-08-22 11:32  rkowen
+
+	* .cvsignore, NEWS, README: Updated the documentation to the
+	current state.
+
 2007-08-22 10:06  rkowen
 
 	* pam_script.c: Fixed the static PAM info.

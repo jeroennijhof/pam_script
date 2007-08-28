@@ -1,0 +1,35 @@
+#! /bin/sh
+#
+# An example pam-script, which can be used as a template for your own
+#
+# The accepted list of scripts:
+#	pam_script_auth
+#	pam_script_acct
+#	pam_script_passwd
+#	pam_script_ses_open
+#	pam_script_ses_close
+#
+# The environment variables passed by pam-script onto the script
+# (all will exist but some may be null if not applicable):
+#	PAM_SERVICE	- the application that's invoking the PAM stack
+#	PAM_TYPE	- the module-type (e.g. auth,account,session,password)
+#	PAM_USER	- the user being authenticated into
+#	PAM_RUSER	- the remote user, the user invoking the application
+#	PAM_RHOST	- remote host
+#	PAM_TTY		- the controlling tty
+#	PAM_AUTHTOK	- password in readable text
+#
+# assume a GNU compatible date
+stamp=`/bin/date +'%Y%m%d%H%M%S %a'`
+# get the script name (could be link)
+script=`basename $0`
+#
+LOGFILE=/tmp/pam-script.log
+echo $stamp $script $PAM_SERVICE $PAM_TYPE				\
+	user=$PAM_USER ruser=$PAM_RUSER rhost=$PAM_RHOST		\
+	tty=$PAM_TTY							\
+	>> $LOGFILE
+chmod 666 $LOGFILE
+
+# success
+exit 0
