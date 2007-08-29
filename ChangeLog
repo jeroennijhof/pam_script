@@ -1,6 +1,19 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-08-29 14:22  rkowen
+
+	* NEWS, README, pam_script.c, debian/pam-script.7.in,
+	etc/logscript: Switched from using the system() command to
+	fork()/execve(), so the pam_script.so arguments could be passed on
+	to the scripts.  Therefore, a single script could be distributed to
+	many systems in an organization, but custom behavior could be
+	flagged in the pam.conf.
+
+2007-08-28 15:07  rkowen
+
+	* NEWS: Updated the NEWS.
+
 2007-08-28 14:59  rkowen
 
 	* Makefile.am, etc/README, etc/logscript: Added an example
