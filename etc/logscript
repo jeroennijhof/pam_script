@@ -28,8 +28,8 @@ LOGFILE=/tmp/pam-script.log
 echo $stamp $script $PAM_SERVICE $PAM_TYPE				\
 	user=$PAM_USER ruser=$PAM_RUSER rhost=$PAM_RHOST		\
 	tty=$PAM_TTY							\
+	args=["$@"]							\
 	>> $LOGFILE
-chmod 666 $LOGFILE
 
 # success
 exit 0

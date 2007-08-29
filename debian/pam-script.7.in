@@ -86,7 +86,8 @@ is first closed.
 All the scripts will be passed several environment variables:
 PAM_USER, PAM_RUSER, PAM_RHOST, PAM_SERVICE, PAM_AUTHTOK, PAM_TTY,
 and PAM_TYPE referring to the module-type.
-Nothing will be passed on the command line.
+The pam_script.so arguments in the pam.conf will be passed on the command line,
+which can be used to modify the script behavior.
 
 .SH FILES
 .B @libdir@/pam_script.so

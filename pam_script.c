@@ -19,9 +19,10 @@
 #include <stdio.h>
 #include <stdarg.h>			/* varg... */
 #include <string.h>			/* strcmp,strncpy,... */
-#include <sys/types.h>			/* stat */
+#include <sys/types.h>			/* stat, fork, wait */
 #include <sys/stat.h>			/* stat */
-#include <unistd.h>			/* stat */
+#include <sys/wait.h>			/* wait */
+#include <unistd.h>			/* stat, fork, execve, **environ */
 #if HAVE_VSYSLOG
 #  include <syslog.h>			/* vsyslog */
 #endif
@@ -60,6 +61,9 @@
 	{if (pam_get_item(pamh, key, &envval) == PAM_SUCCESS)		\
 		pam_script_setenv(#key, (const char *) envval);		\
 	else	pam_script_setenv(#key, (const char *) NULL);}
+
+/* external variables */
+extern char **environ;
 
 #if 0
 /* convenient function to throw into one of the methods below
@@ -129,15 +133,18 @@ static int pam_script_exec(pam_handle_t *pamh,
 	int rv, int argc, const char **argv) {
 
 	int	retval = rv,
+		status,
 		i;
 	char	cmd[BUFSIZE];
+	char	**newargv;
 	struct stat fs;
 	const void *envval = NULL;
+	pid_t	child_pid = 0;
 
 	strncpy(cmd, PAM_SCRIPT_DIR, BUFSIZE - 1);
 
 	/* check for pam.conf options */
-	for (i = 1; i < argc; i++) {
+	for (i = 0; i < argc; i++) {
 		if (!strncmp(argv[i],"onerr=",6)) {
 			if (!strcmp(argv[i],"onerr=fail"))
 				retval = rv;
@@ -183,9 +190,29 @@ static int pam_script_exec(pam_handle_t *pamh,
 	PAM_SCRIPT_SETENV(PAM_AUTHTOK);
 
 	/* Execute external program */
-	retval = system(cmd);
-	if (retval)
-		return rv;
+	/* fork process */
+	switch(child_pid = fork()) {
+	case -1:				/* fork failure */
+		return retval;
+	case  0:				/* child */
+		/* construct newargv */
+		if (!(newargv = (char **) calloc(sizeof(char *), argc+2)))
+			return retval;
+		newargv[0] = cmd;
+		for (i = 0; i < argc; i++) {
+			newargv[1+i] = (char *) argv[i];
+		}
+		(void) execve(cmd, newargv, environ);
+		/* shouldn't get here, unless an error */
+		return retval;
+
+	default:				/* parent */
+		(void) waitpid(child_pid, &status, 0);
+		if (WIFEXITED(status))
+			return WEXITSTATUS(status);
+		else
+			return retval;
+	}
 	return PAM_SUCCESS;
 }
 

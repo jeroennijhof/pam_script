@@ -11,10 +11,11 @@ pam-script 1.1.0
 	* test whether the script exists and is executable.
 	* added the pam.conf configure option - onerr=(success|fail)
 	  to set the default behavior when the script test fails.
-	* sets several PAM_* environment variables and passes them to
-	  the scripts.
 	* added the pam.conf configure option - dir=/some/path/ to specify
 	  an alternative directory where to look for the scripts.
+	* sets several PAM_* environment variables and passes them to
+	  the scripts.
+	* pass the pam_script.so arguments to the script's command line.
 	* added an example and man page
 
 pam-script 1.0.0

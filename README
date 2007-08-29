@@ -1,6 +1,7 @@
 README 
 
 PAM-script has been written by Jeroen Nijhof <jnijhof@nijhofnet.nl>
+with packaging and some modifications by R.K. Owen <rkowen@nersc.gov>.
 
 Description:
 	PAM-script allows you to execute scripts during authorization,
@@ -10,8 +11,8 @@ Description:
 	module to execute a session script.
 
 Options to pam_script.so:
-	onerr=(success|fail) - default behaviour if the module can not find
-	or execute the various pam-scripts.  The default is 'success'.
+	onerr=(success|fail) - default behavior if the module can not find
+	or execute the various pam-scripts.  The default is 'fail'.
 
 Module-type and Scripts:
 	auth:		pam_script_auth		- username/password handshake
@@ -30,7 +31,7 @@ Pam.conf example:
 	--- end pam.conf ---
 
 or as an extra step (here pam_script.so is optional because this application
-does some extra logging and don't want access denied if there is a problem):
+does some extra logging and doesn't want access denied if there is a problem):
 
 	--- start pam.conf ---
 	ssh auth	required	pam_unix.so
