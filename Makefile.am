@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.5 2007/08/28 21:59:46 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.6 2007/08/30 23:32:49 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -42,7 +42,7 @@ install-data-hook:
 install-exec-hook:
 #	@echo === install-exec-hook ===
 
-install-example:
+install-logger:
 	${INSTALL} -d $(DESTDIR)$(sysconfdir)
 	${INSTALL} -m 755 etc/logscript $(DESTDIR)$(sysconfdir)
 	cd $(DESTDIR)$(sysconfdir) && \
@@ -51,12 +51,22 @@ install-example:
 		test -e $$f || $(LN_S) logscript $$f; \
 	done
 
+install-tally:
+	${INSTALL} -d $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 755 etc/tally $(DESTDIR)$(sysconfdir)
+	cd $(DESTDIR)$(sysconfdir) && \
+	for f in pam_script_auth pam_script_acct pam_script_passwd \
+	pam_script_ses_open pam_script_ses_close; do \
+		test -e $$f || $(LN_S) tally $$f; \
+	done
+
 help:
 	@echo ""
 	@echo "make		- compile sources to a shared library module"
 	@echo "make all		- same as above"
 	@echo "make install	- copy module and docs to destination"
-	@echo "make install-example	- install the example scripts"
+	@echo "make install-logger	- install the logger example scripts"
+	@echo "make install-tally	- install the tally  example scripts"
 	@echo "make clean	- cleans out most useless files"
 	@echo "make distclean	- cleans & removes most made files"
 	@echo "make CL		- remakes the ChangeLog from the CVS commits"
