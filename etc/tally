@@ -1,0 +1,137 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+	if 0;
+#
+# Tally example
+#	see pam-tally for details
+#
+my ($FILE,$deny,$lock_time, $unlock_time, $magic_root, $even_deny_root_account,
+	$retval)
+	 = ("/tmp/pam-script-tally", 5, 5, 60, 0, 0, 0);
+my ($fmt) = ("%-12s %3d    %s\n");
+
+our ($opt_h,$opt_L,$opt_t,$opt_l,$opt_r);
+
+use Getopt::Std;
+getopts('hLt:l:r:');
+
+$| = 1;		# flush output
+$0 =~ s{^.*/}{};	# strip to basename
+
+&usage()	if defined $opt_h;
+
+sub usage {
+	print <<EOF
+$0 - pam-script example of pam-tally, which tracks
+	the number of failed logins and will lock out the person
+	if exceeds some threshold.
+
+usage: $0 [-h][-L][[-t|-l|-r] user]		\
+   [deny=N][lock_time=S][unlock_time=S][magic_root][even_deny_root_account]
+where	-h		this usage info
+	-L		list all the users
+	-t user		tally entry for user
+	-l user		list  entry for user
+	-r user		reset entry for user
+these only apply if invoked from pam-script
+	deny=N		number of failures before locking out
+	unlock_time=S	number of seconds to deny access after a failure
+	magic_root	don't tally the counter for root
+	even_deny_root_account
+			root is normally not locked out unless this is given
+
+EOF
+;
+print q{version:	$Id: tally,v 1.1 2007/08/30 23:26:10 rkowen Exp $},"\n\n";
+	exit
+}
+
+use Fcntl;
+use SDBM_File;
+
+tie (%tally, 'SDBM_File',$FILE, O_CREAT|O_RDWR, 0644)
+	or die "Could not tie SDBM file '$FILE': $!; aborting";
+
+if (defined $opt_L) {
+# show all users
+	foreach my $k (sort {$a cmp $b} keys %tally) {
+		my ($cnt, $date) = &dget($tally{$k});
+		printf $fmt, $k, $cnt, &datetime($date);
+	}
+} elsif (defined $opt_t || defined $opt_l || defined $opt_r) {
+	my ($ocnt,$user) = (0,undef);
+	do {$ocnt++; $user = $opt_t;}	if defined $opt_t;
+	do {$ocnt++; $user = $opt_l;}	if defined $opt_l;
+	do {$ocnt++; $user = $opt_r;}	if defined $opt_r;
+	die "Only one -t,-l, or -r option should be given"
+		if ($ocnt > 1);
+	$tally{$user} = &dset(0,0)	 if ! exists $tally{$user};
+
+	my ($cnt,$date) = &dget($tally{$user});
+	$cnt=0		if ! defined $cnt;
+	$date=0		if ! defined $date;
+	if (defined $opt_t) {
+		$tally{$user} = &dset($cnt+1, time);
+	} elsif (defined $opt_r) {
+		$tally{$user} = &dset(0, $date);
+	} elsif (defined $opt_l) {
+		printf $fmt,$user,$cnt,&datetime($date);
+	}
+} elsif ($0 =~ /^pam_sm_authenticate$/ || $0 =~ /^pam_sm_acct_mgmt$/) {
+	foreach my $arg (@ARGV) {
+		$deny = $1		if ($arg =~ /^deny=(\d+)/);
+		$lock_time = $1		if ($arg =~ /^lock_time=(\d+)/);
+		$unlock_time = $1	if ($arg =~ /^unlock_time=(\d+)/);
+		$magic_root = 1		if ($arg =~ /^magic_root$/);
+		$even_deny_root_account = 1
+			if ($arg =~ /^even_deny_root_account$/);
+	}
+#	print join(' ',@ARGV),"\n";
+#	print "deny = $deny\n";
+#	print "lock_time = $lock_time\n";
+#	print "unlock_time = $unlock_time\n";
+#	print "magic_root = $magic_root\n";
+#	print "even_deny_root_account = $even_deny_root_account\n";
+
+	# grab some PAM env.vars.
+	my $PAM_USER = $ENV{"PAM_USER"};
+	my ($cnt,$date) = &dget($tally{$PAM_USER});
+
+	if ($0 =~ /^pam_sm_authenticate$/) {
+		# tally count
+		$cnt++;
+		$cnt--		if $magic_root && $PAM_USER =~ /^root$/;
+		$retval = 1	if $cnt >= $deny;
+		$retval = 0	if ! $even_deny_root_account
+				&& $PAM_USER =~ /^root$/;
+
+	} elsif ($0 =~ /^pam_sm_acct_mgmt$/) {
+		$date = time;
+		$cnt = 0;
+	}
+	$tally{$PAM_USER} = &dset($cnt,$date);
+}
+
+untie %tally;
+exit $retval;
+
+sub datetime {
+	my $time = shift;
+	return "unset"	if !$time;
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
+		= localtime($time);
+	return sprintf "%04d%02d%02d%02d%02d%02d", $year + 1900, $mon + 1,
+		$mday, $hour, $min, $sec;
+}
+
+sub dset {
+	my ($cnt,$date) = @_;
+	return pack "il", $cnt, $date;
+}
+
+sub dget {
+	my $data = shift;
+	return unpack "il", $data;
+}
+
+1;

@@ -1,22 +1,37 @@
-This directory gives an example template pam-script,  which in this
-case does nothing more than log the various PAM_* environment variables
-to a log file /tmp/pam-script.log  which can be pretty informative
-as to what services use the PAM stack, and what information is collected
-and passed along.
-
-The acceptable list of scripts that are invoked by pam-script is:
+This directory gives some pam-script examples.  To use these scripts
+they must be placed in the directory indicated by "configure --sysconfdir",
+which is usually /etc/pam-script, and symbolic links need to be made to
+conform to the acceptable list of scripts that are invoked by pam-script:
 	pam_script_auth
 	pam_script_acct
 	pam_script_passwd
 	pam_script_ses_open
 	pam_script_ses_close
 
-The default behavior for pam-script is to fail if it can not find a script.
-However, this is only the pam_script.so module is placed into the PAM stack
-in either /etc/pam.conf or in the various /etc/pam.d/ services.
+logscript:
+Simply records the PAM_* environment variables and the pam_script.so
+arguments to /tmp/pam-script.log.
+It's useful to observe which stages are executed and by whom.
+However, if the script is modified to show PAM_AUTHTOK, this exposes
+the raw password text.
 
-To try out the pam-script.so module with the various module-types, it's
-easiest to edit the individual common service configuration files.
+tally:
+A pam-script version of the pam-tally module, supporting some of the same
+options: deny, lock_time, unlock_time, magic_root, and even_deny_root_account.
+The other options are ignored.
+The script itself is written in perl and keeps the info in a database,
+/tmp/pam-script-tally.*.  Use the tally script to query, set, or reset
+items.  Run "tally -h" for further info.
+Set the following symbolic links pointing to tally
+	pam_script_auth
+	pam_script_acct
+
+The default behavior for pam-script is to fail if a needed script is
+missing for the corresponding module-type.
+
+To try out the pam-script.so module and the logscript program with the
+various module-types, it's easiest to edit the individual common service
+configuration files.
 
 For Ubuntu/Debian:
 	cat >>/etc/pam.d/common-account <<!
