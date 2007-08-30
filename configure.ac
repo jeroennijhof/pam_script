@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.6 2007/08/27 22:28:21 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.7 2007/08/30 23:32:16 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -26,6 +26,10 @@ AM_DISABLE_STATIC
 dnl --------------------------------------------------------------------
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 
 dnl --------------------------------------------------------------------
@@ -51,17 +55,23 @@ AH_TOP([
 
 dnl --------------------------------------------------------------------
 dnl Checks for header files.
-AC_CHECK_HEADERS([unistd.h])
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([string.h syslog.h unistd.h])
 AC_CHECK_HEADERS([security/pam_appl.h security/pam_modules.h],,
 [AC_MSG_ERROR([*** Sorry, you must install the PAM development module ***])])
 
 dnl --------------------------------------------------------------------
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_TYPE_PID_T
 
 dnl --------------------------------------------------------------------
 dnl Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_MALLOC
 AC_FUNC_STAT
+AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(vsyslog)
 if test $ac_cv_func_vsyslog = no; then
 	# syslog is not in the default libraries.  See if it's in some other.
