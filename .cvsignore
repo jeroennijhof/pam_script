@@ -14,4 +14,4 @@ pam_script.la
 pam_script.lo
 pam_script_la-pam_script.lo
 stamp-h1
-
+*.tar.gz
