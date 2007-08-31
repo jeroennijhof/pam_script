@@ -13,10 +13,12 @@ pam-script 1.1.0
 	  to set the default behavior when the script test fails.
 	* added the pam.conf configure option - dir=/some/path/ to specify
 	  an alternative directory where to look for the scripts.
-	* sets several PAM_* environment variables and passes them to
+	* set several PAM_* environment variables and pass them to
 	  the scripts.
 	* pass the pam_script.so arguments to the script's command line.
-	* added an example and man page
+	* added a man page for pam-script.
+	* included examples: logscript and tally, where the latter mimics
+	  much of the pam-tally module capability.
 
 pam-script 1.0.0
 Mar 01, 2005			Jeroen Nijhof <jnijhof@nijhofnet.nl>
