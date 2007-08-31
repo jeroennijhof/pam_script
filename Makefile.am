@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.6 2007/08/30 23:32:49 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.7 2007/08/31 16:35:35 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -42,6 +42,12 @@ install-data-hook:
 install-exec-hook:
 #	@echo === install-exec-hook ===
 
+install-examples:
+	${INSTALL} -d $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 644 etc/README $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 755 etc/logscript $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 755 etc/tally $(DESTDIR)$(sysconfdir)
+
 install-logger:
 	${INSTALL} -d $(DESTDIR)$(sysconfdir)
 	${INSTALL} -m 755 etc/logscript $(DESTDIR)$(sysconfdir)
@@ -55,8 +61,7 @@ install-tally:
 	${INSTALL} -d $(DESTDIR)$(sysconfdir)
 	${INSTALL} -m 755 etc/tally $(DESTDIR)$(sysconfdir)
 	cd $(DESTDIR)$(sysconfdir) && \
-	for f in pam_script_auth pam_script_acct pam_script_passwd \
-	pam_script_ses_open pam_script_ses_close; do \
+	for f in pam_script_auth pam_script_acct ; do \
 		test -e $$f || $(LN_S) tally $$f; \
 	done
 
@@ -65,6 +70,7 @@ help:
 	@echo "make		- compile sources to a shared library module"
 	@echo "make all		- same as above"
 	@echo "make install	- copy module and docs to destination"
+	@echo "make install-examples	- install all of the example scripts"
 	@echo "make install-logger	- install the logger example scripts"
 	@echo "make install-tally	- install the tally  example scripts"
 	@echo "make clean	- cleans out most useless files"
