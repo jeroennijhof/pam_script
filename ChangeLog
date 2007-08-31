@@ -1,6 +1,52 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-08-31 10:43  rkowen
+
+	* NEWS: Updated with the tally example.
+
+2007-08-31 10:40  rkowen
+
+	* .cvsignore, debian/.cvsignore: Ignore more generated files.
+
+2007-08-31 10:40  rkowen
+
+	* etc/tally: Need to give a specific #! line and not a generic
+	search for perl concoction.
+
+2007-08-31 10:38  rkowen
+
+	* pam_script.c: pam_script_exec() should only return PAM_SUCCESS or
+	the return value given ...  not what the script returns else this
+	confuses PAM which will give incorrect error messages.
+
+2007-08-31 09:35  rkowen
+
+	* Makefile.am: Added a target for just copying all of the example
+	scripts.
+
+2007-08-31 09:34  rkowen
+
+	* etc/README: Hopefully, made the documentation clearer.
+
+2007-08-31 09:10  rkowen
+
+	* etc/: README, tally: Fine tuned the lock_time and unlock_time
+	algorithm.
+
+2007-08-30 16:32  rkowen
+
+	* Makefile.am: Added install-logger and install-tally targets.
+
+2007-08-30 16:32  rkowen
+
+	* configure.ac: Added the items indicated by another autoscan.
+
+2007-08-30 16:26  rkowen
+
+	* etc/: README, tally: Added another example - tally, which
+	implements something similar to the pam-tally.so module.
+
 2007-08-29 14:22  rkowen
 
 	* NEWS, README, pam_script.c, debian/pam-script.7.in,
