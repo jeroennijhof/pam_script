@@ -22,6 +22,13 @@ To try out the pam-script.so module and the logscript program with the
 various module-types, it's easiest to edit the individual common service
 configuration files.
 
+Make the following symbolic links in /etc/pam-script/
+ln -s logscript pam_script_auth
+ln -s logscript pam_script_acct
+ln -s logscript pam_script_passwd
+ln -s logscript pam_script_ses_open
+ln -s logscript pam_script_ses_close
+
 For Ubuntu/Debian:
 	cat >>/etc/pam.d/common-account <<!
 account	optional	pam_script.so
@@ -67,6 +74,10 @@ To try out the pam-script.so module and the tally program with the
 auth and account  module-types, it's easiest to edit the individual
 common service configuration files.
 
+Make the following symbolic links in /etc/pam-script/
+ln -s logscript pam_script_auth
+ln -s logscript pam_script_acct
+
 For Ubuntu/Debian:
 	cat >>/etc/pam.d/common-account <<!
 account	required	pam_script.so
@@ -85,3 +96,4 @@ auth		required	/lib/security/$ISA/pam_script.so	\
 Pam_script.so is listed as "required" so failures will affect the outcome
 of the PAM stack, particularly for authentication, which will lock a
 user with greater than "deny" login failures.
+
