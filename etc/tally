@@ -1,9 +1,9 @@
-:
-eval 'exec perl -S $0 ${1+"$@"}'
-	if 0;
+#! /usr/bin/perl
+#
+# May need to change the path for perl above
 #
 # Tally example
-#	see pam-tally for details
+#	see the pam-tally module for details
 #
 my ($FILE,$deny,$lock_time, $unlock_time, $magic_root, $even_deny_root_account,
 	$retval)
@@ -42,7 +42,7 @@ these only apply if invoked from pam-script
 
 EOF
 ;
-print q{version:	$Id: tally,v 1.2 2007/08/31 16:10:00 rkowen Exp $},"\n\n";
+print q{version:	$Id: tally,v 1.3 2007/08/31 17:40:08 rkowen Exp $},"\n\n";
 	exit
 }
 
