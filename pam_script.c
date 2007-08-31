@@ -193,6 +193,8 @@ static int pam_script_exec(pam_handle_t *pamh,
 	/* fork process */
 	switch(child_pid = fork()) {
 	case -1:				/* fork failure */
+		pam_script_syslog(LOG_ALERT,
+			"script %s fork failure", cmd);
 		return retval;
 	case  0:				/* child */
 		/* construct newargv */
@@ -204,12 +206,14 @@ static int pam_script_exec(pam_handle_t *pamh,
 		}
 		(void) execve(cmd, newargv, environ);
 		/* shouldn't get here, unless an error */
+		pam_script_syslog(LOG_ALERT,
+			"script %s exec failure", cmd);
 		return retval;
 
 	default:				/* parent */
 		(void) waitpid(child_pid, &status, 0);
 		if (WIFEXITED(status))
-			return WEXITSTATUS(status);
+			return (WEXITSTATUS(status) ? rv : PAM_SUCCESS);
 		else
 			return retval;
 	}
