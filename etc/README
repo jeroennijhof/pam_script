@@ -15,17 +15,6 @@ It's useful to observe which stages are executed and by whom.
 However, if the script is modified to show PAM_AUTHTOK, this exposes
 the raw password text.
 
-tally:
-A pam-script version of the pam-tally module, supporting some of the same
-options: deny, lock_time, unlock_time, magic_root, and even_deny_root_account.
-The other options are ignored.
-The script itself is written in perl and keeps the info in a database,
-/tmp/pam-script-tally.*.  Use the tally script to query, set, or reset
-items.  Run "tally -h" for further info.
-Set the following symbolic links pointing to tally
-	pam_script_auth
-	pam_script_acct
-
 The default behavior for pam-script is to fail if a needed script is
 missing for the corresponding module-type.
 
@@ -63,3 +52,36 @@ the rest of the PAM stack.  However, be careful though.  A mistake could
 render your system inoperable and you may not be able to login easily to fix
 the errant PAM configuration.
 
+tally:
+A pam-script version of the pam-tally module, supporting some of the same
+options: deny, lock_time, unlock_time, magic_root, and even_deny_root_account.
+The other options are ignored.
+The script itself is written in perl and keeps the info in a database,
+/tmp/pam-script-tally.*.  Use the tally script to query, set, or reset
+items.  Run "tally -h" for further info.
+Set the following symbolic links pointing to tally:
+	pam_script_auth
+	pam_script_acct
+
+To try out the pam-script.so module and the tally program with the
+auth and account  module-types, it's easiest to edit the individual
+common service configuration files.
+
+For Ubuntu/Debian:
+	cat >>/etc/pam.d/common-account <<!
+account	required	pam_script.so
+!
+	cat >>/etc/pam.d/common-auth <<!
+auth	required	pam_script.so deny=5 lock_time=30 unlock_time=600
+!
+
+For RedHat/Fedora:
+	cat >> /etc/pam.d/system-auth <<!
+account		required	/lib/security/$ISA/pam_script.so
+auth		required	/lib/security/$ISA/pam_script.so	\
+					deny=5 lock_time=30 unlock_time=600
+!
+
+Pam_script.so is listed as "required" so failures will affect the outcome
+of the PAM stack, particularly for authentication, which will lock a
+user with greater than "deny" login failures.

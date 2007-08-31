@@ -7,8 +7,8 @@ eval 'exec perl -S $0 ${1+"$@"}'
 #
 my ($FILE,$deny,$lock_time, $unlock_time, $magic_root, $even_deny_root_account,
 	$retval)
-	 = ("/tmp/pam-script-tally", 5, 5, 60, 0, 0, 0);
-my ($fmt) = ("%-12s %3d    %s\n");
+	 = ("/tmp/pam-script-tally", 5, 5, 0, 0, 0, 0);
+my ($fmt) = ("%-12s %3d    %s  %s\n");
 
 our ($opt_h,$opt_L,$opt_t,$opt_l,$opt_r);
 
@@ -42,7 +42,7 @@ these only apply if invoked from pam-script
 
 EOF
 ;
-print q{version:	$Id: tally,v 1.1 2007/08/30 23:26:10 rkowen Exp $},"\n\n";
+print q{version:	$Id: tally,v 1.2 2007/08/31 16:10:00 rkowen Exp $},"\n\n";
 	exit
 }
 
@@ -55,8 +55,8 @@ tie (%tally, 'SDBM_File',$FILE, O_CREAT|O_RDWR, 0644)
 if (defined $opt_L) {
 # show all users
 	foreach my $k (sort {$a cmp $b} keys %tally) {
-		my ($cnt, $date) = &dget($tally{$k});
-		printf $fmt, $k, $cnt, &datetime($date);
+		my ($cnt, $sess, $auth) = &dget($tally{$k});
+		printf $fmt, $k, $cnt, &datetime($sess), &datetime($auth);
 	}
 } elsif (defined $opt_t || defined $opt_l || defined $opt_r) {
 	my ($ocnt,$user) = (0,undef);
@@ -65,19 +65,20 @@ if (defined $opt_L) {
 	do {$ocnt++; $user = $opt_r;}	if defined $opt_r;
 	die "Only one -t,-l, or -r option should be given"
 		if ($ocnt > 1);
-	$tally{$user} = &dset(0,0)	 if ! exists $tally{$user};
+	$tally{$user} = &dset(0,0,0)	 if ! exists $tally{$user};
 
-	my ($cnt,$date) = &dget($tally{$user});
+	my ($cnt,$sess,$auth) = &dget($tally{$user});
 	$cnt=0		if ! defined $cnt;
-	$date=0		if ! defined $date;
+	$sess=0		if ! defined $sess;
+	$auth=0		if ! defined $auth;
 	if (defined $opt_t) {
-		$tally{$user} = &dset($cnt+1, time);
+		$tally{$user} = &dset($cnt+1, time, time);
 	} elsif (defined $opt_r) {
-		$tally{$user} = &dset(0, $date);
+		$tally{$user} = &dset(0, $sess, $auth);
 	} elsif (defined $opt_l) {
-		printf $fmt,$user,$cnt,&datetime($date);
+		printf $fmt,$user,$cnt,&datetime($sess),&datetime($auth);
 	}
-} elsif ($0 =~ /^pam_sm_authenticate$/ || $0 =~ /^pam_sm_acct_mgmt$/) {
+} elsif ($0 =~ /^pam_script_auth$/ || $0 =~ /^pam_script_acct$/) {
 	foreach my $arg (@ARGV) {
 		$deny = $1		if ($arg =~ /^deny=(\d+)/);
 		$lock_time = $1		if ($arg =~ /^lock_time=(\d+)/);
@@ -86,30 +87,30 @@ if (defined $opt_L) {
 		$even_deny_root_account = 1
 			if ($arg =~ /^even_deny_root_account$/);
 	}
-#	print join(' ',@ARGV),"\n";
-#	print "deny = $deny\n";
-#	print "lock_time = $lock_time\n";
-#	print "unlock_time = $unlock_time\n";
-#	print "magic_root = $magic_root\n";
-#	print "even_deny_root_account = $even_deny_root_account\n";
 
 	# grab some PAM env.vars.
 	my $PAM_USER = $ENV{"PAM_USER"};
-	my ($cnt,$date) = &dget($tally{$PAM_USER});
+	my ($cnt, $sess, $auth) = &dget($tally{$PAM_USER});
+	my $now = time;
 
-	if ($0 =~ /^pam_sm_authenticate$/) {
+	if ($0 =~ /^pam_script_auth$/) {
 		# tally count
+		$retval = 1	if $cnt && ($now < $auth + $lock_time);
+		$cnt = 0	if ($cnt > $deny) && $unlock_time
+				&& ($now > $auth + $unlock_time);
 		$cnt++;
 		$cnt--		if $magic_root && $PAM_USER =~ /^root$/;
 		$retval = 1	if $cnt >= $deny;
 		$retval = 0	if ! $even_deny_root_account
 				&& $PAM_USER =~ /^root$/;
+		$auth = $now;
 
-	} elsif ($0 =~ /^pam_sm_acct_mgmt$/) {
-		$date = time;
+	} elsif ($0 =~ /^pam_script_acct$/) {
+		$sess = $now;
+		$auth = $now;
 		$cnt = 0;
 	}
-	$tally{$PAM_USER} = &dset($cnt,$date);
+	$tally{$PAM_USER} = &dset($cnt,$sess,$auth);
 }
 
 untie %tally;
@@ -125,13 +126,13 @@ sub datetime {
 }
 
 sub dset {
-	my ($cnt,$date) = @_;
-	return pack "il", $cnt, $date;
+	my ($cnt,$sess,$auth) = @_;
+	return pack "ill", $cnt, $sess, $auth;
 }
 
 sub dget {
 	my $data = shift;
-	return unpack "il", $data;
+	return unpack "ill", $data;
 }
 
 1;
