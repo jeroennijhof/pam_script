@@ -23,6 +23,9 @@
 #include <sys/stat.h>			/* stat */
 #include <sys/wait.h>			/* wait */
 #include <unistd.h>			/* stat, fork, execve, **environ */
+#if HAVE_SETENV || HAVE_PUTENV
+#  include <stdlib.h>			/* setenv, putenv */
+#endif
 #if HAVE_VSYSLOG
 #  include <syslog.h>			/* vsyslog */
 #endif
@@ -267,7 +270,6 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 {
      int retval;
      const char *user = NULL;
-     char cmd[BUFSIZE];
 
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
@@ -286,7 +288,6 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
 {
      int retval;
      const char *user = NULL;
-     char cmd[BUFSIZE];
 
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
@@ -301,7 +302,6 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
 {
      int retval;
      const char *user = NULL;
-     char cmd[BUFSIZE];
 
      if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
