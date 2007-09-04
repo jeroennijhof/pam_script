@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.7 2007/08/31 16:35:35 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.8 2007/09/04 22:14:42 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -40,11 +40,13 @@ install-data-hook:
 	-rm $(DESTDIR)/$(libdir)/$(module_LTLIBRARIES)
 
 install-exec-hook:
+	${INSTALL} -d $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 644 etc/README $(DESTDIR)$(sysconfdir)
 #	@echo === install-exec-hook ===
 
 install-examples:
 	${INSTALL} -d $(DESTDIR)$(sysconfdir)
-	${INSTALL} -m 644 etc/README $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 644 etc/README.examples $(DESTDIR)$(sysconfdir)
 	${INSTALL} -m 755 etc/logscript $(DESTDIR)$(sysconfdir)
 	${INSTALL} -m 755 etc/tally $(DESTDIR)$(sysconfdir)
 

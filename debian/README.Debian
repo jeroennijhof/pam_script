@@ -8,4 +8,6 @@ to include pam-script.so edit /etc/pam.d/common-*
 Run script -c "dpkg-buildpackage -rfakeroot"
 in the source directory above this one.
 
+Look at the content list of the deb file with "dpkg -c"
+
  -- R.K. Owen <rkowen@nersc.gov>, Thu, 23 Aug 2007 09:03:35 -0700

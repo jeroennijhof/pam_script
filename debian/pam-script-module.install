@@ -1,1 +1,2 @@
 lib/security/pam_script.so*
+etc/pam-script/README

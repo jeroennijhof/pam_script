@@ -15,3 +15,13 @@ Description: a PAM module that can invoke scripts within the PAM stack
  changes, and on session opening or closing; which can affect the PAM stack
  if desired.
 
+Package: pam-script-examples
+Section: libs
+Architecture: any
+Depends: pam-script-module
+Suggests: libpam-doc
+Description: Some pam-script example programs
+ The tally script emulates much of the pam-tally module, but via pam-script.
+ The logscript just records the passed on PAM_* env.vars. - useful for
+ understanding what and how PAM modules are executed.
+
