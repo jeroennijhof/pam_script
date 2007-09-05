@@ -93,6 +93,7 @@ binary-arch: build install
 	dh_installdocs
 #	dh_installexamples
 #	dh_install
+	dh_movefiles --sourcedir=debian/tmp
 #	dh_installmenu
 #	dh_installdebconf	
 #	dh_installlogrotate
