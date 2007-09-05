@@ -23,9 +23,7 @@
 #include <sys/stat.h>			/* stat */
 #include <sys/wait.h>			/* wait */
 #include <unistd.h>			/* stat, fork, execve, **environ */
-#if HAVE_SETENV || HAVE_PUTENV
-#  include <stdlib.h>			/* setenv, putenv */
-#endif
+#include <stdlib.h>			/* calloc, setenv, putenv */
 #if HAVE_VSYSLOG
 #  include <syslog.h>			/* vsyslog */
 #endif
