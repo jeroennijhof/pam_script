@@ -1,6 +1,38 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-09-05 14:36  rkowen
+
+	* NEWS: Added the debian packaging notice.
+
+2007-09-05 14:35  rkowen
+
+	* Makefile.am, debian/pam-script-examples.files,
+	debian/pam-script-examples.install,
+	debian/pam-script-module.install, debian/rules: Got the debian
+	packaging the way I want it.
+
+2007-09-05 14:34  rkowen
+
+	* pam_script.c: Need stdlib.h for calloc() as well as setenv() and
+	putenv().
+
+2007-09-05 14:33  rkowen
+
+	* etc/README.examples: Fixed reference to tally.
+
+2007-09-04 15:14  rkowen
+
+	* Makefile.am, debian/README.Debian, debian/control,
+	debian/pam-script-examples.dirs,
+	debian/pam-script-examples.install, debian/pam-script-module.dirs,
+	debian/pam-script-module.install, debian/rules, etc/README,
+	etc/README.examples: Changes for creating two debian packages.
+
+2007-09-04 15:14  rkowen
+
+	* pam_script.c: Changes to remove any compiler warnings.
+
 2007-08-31 10:43  rkowen
 
 	* NEWS: Updated with the tally example.
