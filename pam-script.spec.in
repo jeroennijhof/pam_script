@@ -1,0 +1,68 @@
+# see http://www.rpm.org/RPM-HOWTO/build.html for details
+# and sub-package details for maximum-rpm too
+#
+Summary: a PAM module that can invoke scripts within the PAM stack
+Name: pam-script
+Version: @VERSION@
+Release: 1
+License: GPL
+Vendor: LBNL/NERSC
+Group: System Environment/Base
+Source: http://sourceforge.net/projects/pam-script/pam-script-@VERSION@.tar.gz
+BuildRoot: /var/tmp/%{name}-buildroot
+Provides: pam-script-@VERSION@
+Requires: pam
+%description
+pam-script allows you to execute scripts during  authorization,  passwd
+changes, and on session opening or closing; which can affect the PAM stack.
+----------
+
+%package examples
+Summary: some pam-script example scripts and docs
+Group: System Environment/Base
+%description examples
+logscript - simply records the various PAM_* environment variables to
+a log file.  Useful for studying how the various PAM modules work together.
+tally - a pam-script version of the pam-tally module with much of the
+same options.  It's a perl script and is useful for hacking your own
+authentication scheme.
+
+%prep
+%setup
+
+%build
+
+%pre
+
+%install
+
+# pam-script
+./configure	--prefix=/usr					\
+		--libdir=/lib/security				\
+		--sysconfdir=/etc/pam-script			\
+		--mandir=/usr/share/man
+
+make DESTDIR=$RPM_BUILD_ROOT install
+make DESTDIR=$RPM_BUILD_ROOT install-man7
+make DESTDIR=$RPM_BUILD_ROOT install-examples
+
+%post
+# pam-script
+
+%preun
+# pam-script
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc README
+/lib/security/pam_script.so
+/etc/pam-script/README
+/usr/share/man/man7/pam-script.7.gz
+
+%files examples
+/etc/pam-script/README.examples
+/etc/pam-script/logscript
+/etc/pam-script/tally

@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.9 2007/09/05 21:35:33 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.10 2007/09/06 23:17:51 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -23,6 +23,7 @@ pam_script_la_CFLAGS = $(AM_CFLAGS) -DPAM_SCRIPT_DIR="\"$(sysconfdir)\""
 pam_script_la_LDFLAGS = -module -avoid-version
 
 EXTRA_DIST=					\
+	pam-script.spec				\
 	debian					\
 	etc
 
