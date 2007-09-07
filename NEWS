@@ -19,7 +19,7 @@ pam-script 1.1.0
 	* added a man page for pam-script.
 	* included examples: logscript and tally, where the latter mimics
 	  much of the pam-tally module capability.
-	* packaged compatible to Debian
+	* packaged compatible to Debian and RedHat derivatives.
 
 pam-script 1.0.0
 Mar 01, 2005			Jeroen Nijhof <jnijhof@nijhofnet.nl>
