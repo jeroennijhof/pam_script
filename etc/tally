@@ -42,13 +42,14 @@ these only apply if invoked from pam-script
 
 EOF
 ;
-print q{version:	$Id: tally,v 1.4 2007/09/07 15:12:43 rkowen Exp $},"\n\n";
+print q{version:	$Id: tally,v 1.5 2007/09/07 15:24:45 rkowen Exp $},"\n\n";
 	exit
 }
 
 use Fcntl;
 use SDBM_File;
 
+umask 000;
 tie (%tally, 'SDBM_File',$FILE, O_CREAT|O_RDWR, 0666)
 	or die "Could not tie SDBM file '$FILE': $!; aborting";
 
