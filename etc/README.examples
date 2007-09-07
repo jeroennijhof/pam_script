@@ -8,6 +8,12 @@ conform to the acceptable list of scripts that are invoked by pam-script:
 	pam_script_ses_open
 	pam_script_ses_close
 
+Note that each example requires log or data files that are readable and
+writeable at all levels of authorization, because not all services that
+use PAM are run as the root user (e.g. gnome-screensaver, etc.) and may
+not allow successful access otherwise.  Therefore, be aware of the security
+implications though.
+
 logscript:
 Simply records the PAM_* environment variables and the pam_script.so
 arguments to /tmp/pam-script.log.

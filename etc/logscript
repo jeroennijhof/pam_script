@@ -30,6 +30,7 @@ echo $stamp $script $PAM_SERVICE $PAM_TYPE				\
 	tty=$PAM_TTY							\
 	args=["$@"]							\
 	>> $LOGFILE
+chmod 666 $LOGFILE > /dev/null 2>&1
 
 # success
 exit 0
