@@ -1,6 +1,11 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-12-12 09:19  rkowen
+
+	* INSTALL, Makefile.am, configure.ac: Added distribution specific
+	targets in Makefile.
+
 2007-12-12 08:55  rkowen
 
 	* README: Updated the README info, in preparation for release.

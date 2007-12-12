@@ -1,3 +1,7 @@
 This directory contains the GNU autotools helper scripts, and
 this file is just here so the directory gets created when a
 fresh CVS chechout is done.
+
+The only files that are "native" to this directory are:
+.cvsignore
+.README

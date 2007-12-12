@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.11 2007/12/12 17:19:15 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.12 2007/12/12 17:29:27 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -89,6 +89,7 @@ disthelp:
 	@echo ""
 	@echo "make dist	- creates distribution tarballs"
 	@echo "make distclean	- cleans & removes most made files"
+	@echo "make maintainer-clean	- cleans even more"
 	@echo "make CL		- remakes the ChangeLog from the CVS commits"
 	@echo "make ftp-sourceforge	- upload to sourceforge"
 	@echo ""
