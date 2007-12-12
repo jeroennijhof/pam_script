@@ -7,19 +7,20 @@
 
 ****************************   Release 1.1 ******************************
 pam-script 1.1.0
+Dec 12, 2007			R.K. Owen	<rkowen@nersc.gov>
 	* sources put under the GNU autotools: automake,libtool,autoconf.
-	* test whether the script exists and is executable.
+	* test whether the pam-script exists and is executable.
 	* added the pam.conf configure option - onerr=(success|fail)
 	  to set the default behavior when the script test fails.
 	* added the pam.conf configure option - dir=/some/path/ to specify
-	  an alternative directory where to look for the scripts.
+	  an alternative directory of where to look for the scripts.
 	* set several PAM_* environment variables and pass them to
 	  the scripts.
 	* pass the pam_script.so arguments to the script's command line.
 	* added a man page for pam-script.
 	* included examples: logscript and tally, where the latter mimics
 	  much of the pam-tally module capability.
-	* packaged compatible to Debian and RedHat derivatives.
+	* package compatible to Debian and RedHat derivatives.
 
 pam-script 1.0.0
 Mar 01, 2005			Jeroen Nijhof <jnijhof@nijhofnet.nl>
