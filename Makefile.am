@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.12 2007/12/12 17:29:27 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.13 2007/12/12 17:36:10 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -71,7 +71,7 @@ install-tally:
 
 ftp-sourceforge: dist
 	@echo "placing sourceforge.net files";
-	/bin/sh ./.ftp.sf $(DISTNAME).tar.gz;
+	${SHELL} ./.ftp.sf $(DIST_ARCHIVES);
 
 help:
 	@echo ""
