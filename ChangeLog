@@ -1,6 +1,10 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-12-12 09:29  rkowen
+
+	* .ftp.sf, Makefile.am, config/.README: More release preparation.
+
 2007-12-12 09:19  rkowen
 
 	* INSTALL, Makefile.am, configure.ac: Added distribution specific
