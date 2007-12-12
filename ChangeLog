@@ -1,6 +1,10 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-12-12 09:42  rkowen
+
+	* NEWS: Ready for official release.
+
 2007-12-12 09:36  rkowen
 
 	* Makefile.am: Fixing sourceforge uploading
