@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.10 2007/09/06 23:17:51 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.11 2007/12/12 17:19:15 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -69,6 +69,10 @@ install-tally:
 		test -e $$f || $(LN_S) tally $$f; \
 	done
 
+ftp-sourceforge: dist
+	@echo "placing sourceforge.net files";
+	/bin/sh ./.ftp.sf $(DISTNAME).tar.gz;
+
 help:
 	@echo ""
 	@echo "make		- compile sources to a shared library module"
@@ -78,7 +82,13 @@ help:
 	@echo "make install-logger	- install the logger example scripts"
 	@echo "make install-tally	- install the tally  example scripts"
 	@echo "make clean	- cleans out most useless files"
-	@echo "make distclean	- cleans & removes most made files"
-	@echo "make CL		- remakes the ChangeLog from the CVS commits"
+	@echo "make disthelp	- extra help for developers"
 	@echo ""
 
+disthelp:
+	@echo ""
+	@echo "make dist	- creates distribution tarballs"
+	@echo "make distclean	- cleans & removes most made files"
+	@echo "make CL		- remakes the ChangeLog from the CVS commits"
+	@echo "make ftp-sourceforge	- upload to sourceforge"
+	@echo ""

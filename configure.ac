@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.8 2007/09/06 23:17:51 rkowen Exp $
+dnl Revision:    $Id: configure.ac,v 1.9 2007/12/12 17:19:15 rkowen Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -29,8 +29,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
 
 dnl --------------------------------------------------------------------
 # Checks for libraries.

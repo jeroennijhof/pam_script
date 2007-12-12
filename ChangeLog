@@ -1,6 +1,10 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2007-12-12 08:55  rkowen
+
+	* README: Updated the README info, in preparation for release.
+
 2007-09-07 08:26  rkowen
 
 	* NEWS: Note that rpms can now be generated.
