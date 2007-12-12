@@ -14,13 +14,23 @@ Options to pam_script.so:
 	onerr=(success|fail) - default behavior if the module can not find
 	or execute the various pam-scripts.  The default is 'fail'.
 
+	dir=/some/path - where to find the pam-scripts listed below.
+
+	All options are passed on to the script commandlines and those not
+	intercepted by PAM may be used to modify the script behavior.
+
 Module-type and Scripts:
 	auth:		pam_script_auth		- username/password handshake
 	account:	pam_script_acct		- non-auth account management
 	passwd:		pam_script_passwd	- changing a password
 	session:	pam_script_ses_open	- actions performed before and
 			pam_script_ses_close	  after a session
-	
+
+	All the scripts will be passed several environment variables:
+	  PAM_USER, PAM_RUSER, PAM_RHOST, PAM_SERVICE, PAM_AUTHTOK,
+	  PAM_TTY, and PAM_TYPE referring to the module-type.
+	Whether the variable has a non-null value or not depends on the
+	context.
 
 Pam.conf example:
 
