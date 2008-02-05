@@ -6,6 +6,11 @@
   or spelling correction your name will probably not be listed.)
 
 ****************************   Release 1.1 ******************************
+pam-script 1.1.1
+Feb  5, 2008			R.K. Owen	<rkowen@nersc.gov>
+	* conditional sections need to be after including config.h .
+	* improved the Debian/Ubuntu package build instructions.
+
 pam-script 1.1.0
 Dec 12, 2007			R.K. Owen	<rkowen@nersc.gov>
 	* sources put under the GNU autotools: automake,libtool,autoconf.
