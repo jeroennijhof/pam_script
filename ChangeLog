@@ -1,6 +1,24 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2008-02-05 08:52  rkowen
+
+	* NEWS: Updated with 1.1.1 changes
+
+2008-02-05 08:49  rkowen
+
+	* configure.ac: Upgrade the minor version for these trivial
+	changes.
+
+2008-02-05 08:47  rkowen
+
+	* debian/README.Debian: Clarified the Debian/Ubuntu instructions.
+
+2008-02-05 08:46  rkowen
+
+	* pam_script.c: Need to have any conditional inclusions after
+	config.h
+
 2007-12-12 09:42  rkowen
 
 	* NEWS: Ready for official release.
