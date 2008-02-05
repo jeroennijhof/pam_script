@@ -24,9 +24,6 @@
 #include <sys/wait.h>			/* wait */
 #include <unistd.h>			/* stat, fork, execve, **environ */
 #include <stdlib.h>			/* calloc, setenv, putenv */
-#if HAVE_VSYSLOG
-#  include <syslog.h>			/* vsyslog */
-#endif
 
 /* enable these module-types */
 #define PAM_SM_AUTH
@@ -38,6 +35,9 @@
 #include <security/pam_modules.h>
 #ifdef HAVE_CONFIG_H
 #  include "config.h"
+#endif
+#if HAVE_VSYSLOG
+#  include <syslog.h>			/* vsyslog */
 #endif
 
 /* --- customize these defines --- */
