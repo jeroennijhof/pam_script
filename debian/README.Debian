@@ -5,8 +5,10 @@ The pam-script module is placed in /lib/security/
 and the scripts are in /etc/pam-script/
 to include pam-script.so edit /etc/pam.d/common-*
 
-Run script -c "dpkg-buildpackage -rfakeroot"
+Run script -c "dpkg-buildpackage" as root
 in the source directory above this one.
+
+You will need the debhelper, libpam0g-dev packages.
 
 Look at the content list of the deb file with "dpkg -c"
 
