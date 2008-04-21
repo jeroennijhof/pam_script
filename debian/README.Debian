@@ -12,4 +12,7 @@ You will need the debhelper, libpam0g-dev packages.
 
 Look at the content list of the deb file with "dpkg -c"
 
+Change the version number by running "debchange -i" and add in the NEWS
+entries for the given version.
+
  -- R.K. Owen <rkowen@nersc.gov>, Thu, 23 Aug 2007 09:03:35 -0700

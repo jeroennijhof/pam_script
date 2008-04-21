@@ -1,3 +1,10 @@
+pam-script (1.1.1-1) gutsy; urgency=low
+
+  * conditional sections need to be after including config.h .
+  * improved the Debian/Ubuntu package build instructions.
+
+ -- R.K. Owen <rk@kronos>  Mon, 21 Apr 2008 14:09:23 -0700
+
 pam-script (1.1.0-1) unstable; urgency=low
 
   * Initial release Closes: #nnnn  (nnnn is the bug number of your ITP)
