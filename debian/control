@@ -1,7 +1,7 @@
 Source: pam-script
 Priority: optional
 Maintainer: R.K. Owen <rkowen@nersc.gov>
-Build-Depends: debhelper (>= 4.0.0), autotools-dev
+Build-Depends: debhelper (>= 4.0.0), autotools-dev, autoconf, automake, libtool, gettext, libpam0g-dev
 Standards-Version: 3.6.2
 Section: libs
 
