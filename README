@@ -63,6 +63,10 @@ Debugging:
 Get the pamtest.c program from the pam-dotfile distribution and it can be
 used to step through the module.
 
+Examples:
+Look at the README.examples file, which may be located under
+/usr/share/doc/libpam-script/ for a Debian derived distribution.
+
 Problem/BUGS report:
 If you find any bugs or problems just mail me
 	Jeroen Nijhof <jnijhof@nijhofnet.nl>
