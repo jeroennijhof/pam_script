@@ -29,11 +29,14 @@ various module-types, it's easiest to edit the individual common service
 configuration files.
 
 Make the following symbolic links in /etc/pam-script/
-ln -s logscript pam_script_auth
-ln -s logscript pam_script_acct
-ln -s logscript pam_script_passwd
-ln -s logscript pam_script_ses_open
-ln -s logscript pam_script_ses_close
+	ln -s logscript pam_script_auth
+	ln -s logscript pam_script_acct
+	ln -s logscript pam_script_passwd
+	ln -s logscript pam_script_ses_open
+	ln -s logscript pam_script_ses_close
+
+or do
+	env PAMSCRIPTDIR=. ./pam_script -v -x -s all logscript
 
 For Ubuntu/Debian:
 	cat >>/etc/pam.d/common-account <<!
@@ -81,8 +84,11 @@ auth and account  module-types, it's easiest to edit the individual
 common service configuration files.
 
 Make the following symbolic links in /etc/pam-script/
-ln -s tally pam_script_auth
-ln -s tally pam_script_acct
+	ln -s tally pam_script_auth
+	ln -s tally pam_script_acct
+
+or
+	env PAMSCRIPTDIR=. ./pam_script -v -x -s auth,acct tally
 
 For Ubuntu/Debian:
 	cat >>/etc/pam.d/common-account <<!

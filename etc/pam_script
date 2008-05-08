@@ -1,0 +1,164 @@
+#! /bin/sh
+
+#
+# by R.K. Owen <rkowen@nersc.gov>
+#
+basedir=`dirname $0`
+[ x"$basedir" = x"" ] && basedir="."
+fname=`basename $0`
+PAMSCRIPTDIR=${PAMSCRIPTDIR:-$basedir/pam-script.d}
+
+if [ x"$fname" != x"pam_script" ]; then
+	# process files in pam-script.d/
+	mtype=''
+	PAM_SCRIPT_STATUS=0
+	export PAM_SCRIPT_STATUS
+	case $fname in
+	*_auth)		mtype='_auth' ;;
+	*_acct)		mtype='_acct' ;;
+	*_passwd)	mtype='_passwd' ;;
+	*_ses_open)	mtype='_ses_open' ;;
+	*_ses_close)	mtype='_ses_close' ;;
+	esac
+
+	for script in $PAMSCRIPTDIR/*$mtype; do
+		echo $script
+		/bin/sh $script "$@" || PAM_SCRIPT_STATUS=1
+		export PAM_SCRIPT_STATUS
+	done
+	exit $PAM_SCRIPT_STATUS
+else
+	# do administrative things
+usage() {
+	/bin/cat <<!
+
+$fname - administrative and driver script for pam-script.d
+
+usage: $fname [-h][-v][-x][{-s|-r} moduletype] base_pam_script
+	-h			this helpful info
+	-v			verbose
+	-x			create pam_script_* links instead
+	-s moduletype		Set the links to base_pam_scriptfile as
+				a combination of auth,pass,ses_cl,ses_op
+				or session for both ses_cl and ses_op
+				or all for them all ... use commas to
+				separate the moduletypes
+	-r moduletype		Remove the same as above
+				If neither -s or -r is given then just
+				show the links
+
+	base_pam_script		which script to handle somehow
+
+Set the PAMSCRIPTDIR if you want links in a directory other than
+$basedir/pam-script.d
+
+!
+}
+
+rmlink () {
+	# $1 operation remove or link
+	# $2 module type auth,acct,passwd,ses_open,ses_close
+	# $3 basepamscript
+	# $4 xpamscript
+
+	if [ x$1 = xlink ]; then
+		(cd $PAMSCRIPTDIR;
+			[ -e $4_$2 ] || [ -e $3 ] && \
+			( [ $verbose = 1 ] && echo ln -s $3 $4_$2;
+			ln -s $3 $4_$2))
+	elif [ x$1 = xremove ]; then
+		(cd $PAMSCRIPTDIR;
+			[ -e $4_$2 ] && \
+			( [ $verbose = 1 ] && echo rm -f $4_$2;
+			rm -f $4_$2))
+	fi
+}
+
+	TEMP=`getopt 'hvxs:r:' "$@"`
+	eval set -- $TEMP
+	verbose=0
+	op='list'
+	mtype=''
+	xbase=''
+
+	while [ $# -gt 0 ]; do
+		case	"$1" in
+		-h)	usage
+			exit
+			;;
+		-v)	verbose=1
+			;;
+		-x)	xbase='pam_script'
+			;;
+		-s)	op='link'
+			shift
+			mtype="$1"
+			;;
+		-r)	op='remove'
+			shift
+			mtype="$1"
+			;;
+		--)	shift
+			break
+			;;
+		-*)	echo invalid option "$1"
+			usage
+			exit
+			;;
+		*)	shift
+			break
+			;;
+		esac
+		shift
+	done
+
+	pamfile=$1
+	if [ x"$pamfile" = x"" ]; then
+		echo "Need to pass a pam script"
+		usage
+		exit
+	fi
+	[ x"$xbase" = x"" ] && xbase=$pamfile
+
+	if [ $verbose = 1 ]; then
+		echo PAMSCRIPTDIR=$PAMSCRIPTDIR
+		echo base pam script=$pamfile
+		echo link base=$xbase
+	fi
+
+	case $op in
+	list)	[ $verbose = 1 ] && echo listing
+		ls -l $PAMSCRIPTDIR/$pamfile* 2>/dev/null
+		;;
+	link|remove)
+		[ $verbose = 1 ] && echo $op
+		eval set -- `echo $mtype | sed 's/,/ /g'`
+		while [ $# -gt 0 ]; do
+			case "$1" in
+			auth)		rmlink $op auth $pamfile $xbase
+					;;
+			acct)		rmlink $op acct $pamfile $xbase
+					;;
+			passwd)		rmlink $op passwd $pamfile $xbase
+					;;
+			ses_open)	rmlink $op ses_open $pamfile $xbase
+					;;
+			ses_close)	rmlink $op ses_close $pamfile $xbase
+					;;
+			session)	rmlink $op ses_open $pamfile $xbase
+					rmlink $op ses_close $pamfile $xbase
+					;;
+			all)		rmlink $op auth $pamfile $xbase
+					rmlink $op acct $pamfile $xbase
+					rmlink $op passwd $pamfile $xbase
+					rmlink $op ses_open $pamfile $xbase
+					rmlink $op ses_close $pamfile $xbase
+					;;
+			esac
+			shift
+		done
+		;;
+	esac
+fi
+
+exit

@@ -1,0 +1,57 @@
+The pam_script tool
+-------------------
+
+Pam-script confusingly provides the pam_script tool for running generic
+pam-script programs in ./pam-script.d/ or for performing some basic
+administrative functions like creating or removing symbolic links to
+a pam-script enabled script or program.  Read the other READMEs or man
+pages for further info regarding the attributes of a pam-script program.
+This README will focus on the pam_script tool and its role in the
+pam-script universe.
+
+The pam_script tool serves two purposes.  Primarily running scripts
+in ./pam-script.d/, and secondly, managing the symbolic links in
+./pam-script.d/ or elsewhere of the various PAM module-types.
+
+The various PAM module-types are:
+	auth		- authorization
+	acct		- account
+	passwd		- password changes
+	ses_open	- session start
+	ses_close	- session end
+
+If the pam_script tool is set-up with the various symbolic links as
+described in the README, then it will run the appropriate scripts
+in the ./pam-script.d/ directory.  For example, say the PAM stack
+invoked pam-script with a PAM module-type of acct, then pam-script
+will run pam_script_acct, which is a symbolic link to pam_script.
+The pam_script tool sees that it was called as pam_script_acct and
+then runs all scripts in ./pam-script.d/ that end with _acct.
+Then returns 0 if all ran successfully, else 1 if any one of them
+failed with a non-zero return status.
+
+In addition, pam_script will set the PAM_SCRIPT_STATUS environment
+variable with the overall exit status so far, so the script can 
+choose whether to perform it's action or not.  If PAM_SCRIPT_STATUS
+is already non-zero then there may be no point to run any further.
+However, some scripts may need to be run whether the PAM_SCRIPT_STATUS
+is non-zero or not.
+
+Also, the command line arguments passed to pam-script (in the
+pam-script.conf) are also passed on to all the scripts invoked from
+within ./pam-script.d/.
+
+Link Administration
+-------------------
+
+The pam_script tool can create all or some of the needed symbolic
+links.  The goal is to allow a third party package to drop a script
+or program in ./pam-script.d/, then create the set of symbolic links
+within the same directory so it may become part of the PAM stack
+via pam-script without the necessity of crafting a full PAM module.
+
+The program dropped into ./pam-script.d/ should check how it is called
+and act accordingly.  Check the provided example scripts, on how to
+do this.
+
+Report problems/bugs to R.K. Owen <rkowen@nersc.gov>

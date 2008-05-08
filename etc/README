@@ -24,7 +24,15 @@ Whatever arguments that are not needed by pam_script.so are ignored and
 just passed on.
 
 The scripts must return an exit value of 0 if successful with
-regards to it's purpose; else return an non-zero exit value.  The
+regards to it's purpose; else return a non-zero exit value.  The
 pam_script.so module does not interpret non-zero values as anything else
 except as the appropriate failure for the given module-type.
+
+The pam_script tool can be used to create the links as needed.
+For example, if the script or program is named "foobar" then the links
+can be created with
+
+	env PAMSCRIPTDIR=. ./pam_script -v -x -s all foobar
+
+run "./pam_script -h" for more options and further information.
 
