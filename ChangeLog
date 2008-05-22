@@ -1,6 +1,43 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2008-05-22 16:27  rkowen
+
+	* .cvsignore, Makefile.am, NEWS, configure.ac, debian/.cvsignore,
+	debian/changelog, debian/control, debian/libpam-script.dirs,
+	debian/libpam-script.docs, debian/libpam-script.links,
+	debian/libpam-script.manpages, debian/rules, etc/README.pam_script,
+	etc/pam_script: pam-script 1.1.2 May 22, 2008		      R.K.
+	Owen	   <rkowen@nersc.gov> * Added the pam_script driver script
+	and the ./pam-script.d/   directory for an easy way for other
+	packages to include   PAM capability via pam-script (suggested by
+	Petter Reinholdtsen).  * Further improvements in the Debian/Ubuntu
+	packaging.
+
+2008-05-08 15:43  rkowen
+
+	* etc/: README, README.examples, README.pam_script, pam_script:
+	Added the pam_script tool for handling the programs in
+	./pam-script.d/
+
+2008-05-07 14:38  rkowen
+
+	* README, debian/changelog, debian/control, debian/copyright,
+	debian/libpam-script.examples, debian/pam-script-examples.dirs,
+	debian/pam-script-examples.files, debian/pam-script-module.dirs,
+	debian/rules: Changing the Debian packaging to adhere to Debian
+	policy, and to resolve some lintian issues.
+
+2008-04-22 09:45  rkowen
+
+	* debian/: README.Debian, control: Further refinement of what
+	packages are needed to build a Debian package.
+
+2008-04-21 14:57  rkowen
+
+	* debian/: README.Debian, changelog: More fixes with the debian
+	package building.
+
 2008-02-05 08:52  rkowen
 
 	* NEWS: Updated with 1.1.1 changes
