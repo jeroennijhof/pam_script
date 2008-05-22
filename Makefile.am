@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.13 2007/12/12 17:36:10 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.14 2008/05/22 23:27:25 rkowen Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -43,7 +43,11 @@ install-data-hook:
 
 install-exec-hook:
 	${INSTALL} -d $(DESTDIR)$(sysconfdir)
+	${INSTALL} -d $(DESTDIR)$(sysconfdir)/pam-script.d
 	${INSTALL} -m 644 etc/README $(DESTDIR)$(sysconfdir)
+	${INSTALL} -m 755 etc/pam_script $(DESTDIR)$(sysconfdir)
+	(cd $(DESTDIR)$(sysconfdir); \
+		PAMSCRIPTDIR=. ./pam_script -x -s all pam_script)
 #	@echo === install-exec-hook ===
 
 install-examples:

@@ -1,3 +1,10 @@
+pam-script (1.1.2-1ubuntu1) gutsy; urgency=low
+
+  * passes all lintian tests (under Ubuntu)
+  * all READMEs are in /usr/share/doc/libpam-script/
+
+ -- R.K. Owen <rk@kronos>  Thu, 22 May 2008 16:23:05 -0700
+
 pam-script (1.1.1-2) gutsy; urgency=low
 
   * fixed package-uses-deprecated-debhelper-compat-version
@@ -5,7 +12,6 @@ pam-script (1.1.1-2) gutsy; urgency=low
   * fixed old-fsf-address-in-copyright-file
   * fixed copyright-file-contains-full-gpl-license
   * fixed wrong-bug-number-in-closes
-  * 
 
  -- R.K. Owen <rkowen@nersc.gov>  Mon, 28 Apr 2008 14:26:47 -0700
 

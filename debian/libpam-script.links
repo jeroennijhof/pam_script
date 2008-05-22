@@ -1,0 +1,5 @@
+/etc/pam-script/pam_script /etc/pam-script/pam_script_acct
+/etc/pam-script/pam_script /etc/pam-script/pam_script_auth
+/etc/pam-script/pam_script /etc/pam-script/pam_script_passwd
+/etc/pam-script/pam_script /etc/pam-script/pam_script_ses_open
+/etc/pam-script/pam_script /etc/pam-script/pam_script_ses_close

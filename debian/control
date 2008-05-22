@@ -1,14 +1,14 @@
 Source: pam-script
 Priority: optional
 Maintainer: R.K. Owen <rkowen@nersc.gov>
-Build-Depends: debhelper (>= 4.0.0), autotools-dev
+Build-Depends: debhelper (>= 4.0.0), autotools-dev, libpam-dev, chrpath
 Standards-Version: 3.7.2
 Section: libs
 
 Package: libpam-script
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libpam0g
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: libpam-doc
 Description: a PAM module that can invoke scripts within the PAM stack
  pam-script allows you to execute scripts during  authorization,  passwd

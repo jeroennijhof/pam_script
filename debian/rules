@@ -81,8 +81,14 @@ install: build
 	dh_clean 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/tmp
+	# Add here commands to install the package into debian/libpam-script
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/libpam-script
+
+	# remove extra README, which is in share/.
+	rm -f $(CURDIR)/debian/libpam-script/etc/pam-script/README
+
+	# strip the RPATH from the shared object
+	chrpath -d $(CURDIR)/debian/libpam-script/lib/security/pam_script.so
 
 
 # Build architecture-independent files here.

@@ -1,8 +1,19 @@
 #! /bin/sh
 
-#
-# by R.K. Owen <rkowen@nersc.gov>
-#
+# COPYRIGHT AND LICENCE
+# 
+# AUTHOR: R K Owen, Ph.D., <rkowen@nersc.gov>
+# of the National Energy Research Scientific Computing Center (NERSC),
+# a Division of the Lawrence Berkeley National Laboratory (LBL),
+# funded by the U.S. Department of Energy.
+# 
+# Copyright (C) 2008 The Regents of the University of California
+# 
+# This is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation;
+# version 2.0 of the License.
+
 basedir=`dirname $0`
 [ x"$basedir" = x"" ] && basedir="."
 fname=`basename $0`
