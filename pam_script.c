@@ -221,6 +221,55 @@ static int pam_script_exec(pam_handle_t *pamh,
 	return PAM_SUCCESS;
 }
 
+int pam_script_converse(pam_handle_t *pamh, int argc,
+	struct pam_message **message, struct pam_response **response)
+{
+	int retval;
+	struct pam_conv *conv;
+
+	retval = pam_get_item(pamh, PAM_CONV, (const void **) &conv);
+	if (retval == PAM_SUCCESS) {
+		retval = conv->conv(argc, (const struct pam_message **) message,
+				response, conv->appdata_ptr);
+	}
+	return retval;
+}
+
+int pam_script_set_authtok(pam_handle_t *pamh, int flags,
+	int argc, const char **argv)
+{
+	int	retval;
+	char	*password;
+	
+	struct pam_message msg[1],*pmsg[1];
+	struct pam_response *response;
+
+	/* set up conversation call */
+	pmsg[0] = &msg[0];
+	msg[0].msg_style = PAM_PROMPT_ECHO_OFF;
+	msg[0].msg = "Password: ";
+	response = NULL;
+
+	if ((retval = pam_script_converse(pamh, 1, pmsg, &response)) != PAM_SUCCESS)
+		return retval;
+
+	if (response) {
+		if ((flags & PAM_DISALLOW_NULL_AUTHTOK) && response[0].resp == NULL) {
+			free(response);
+			return PAM_AUTH_ERR;
+		}
+		password = response[0].resp;
+	  	response[0].resp = NULL;
+	} 
+	else
+		return PAM_CONV_ERR;
+
+	free(response);
+	pam_set_item(pamh, PAM_AUTHTOK, password);
+	return PAM_SUCCESS;
+}
+
+
 /* --- authentication management functions --- */
 
 PAM_EXTERN
@@ -229,9 +278,22 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
 {
     int retval;
     const char *user=NULL;
+    char *password;
 
     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 	return retval;
+
+    /*
+     * Check if PAM_AUTHTOK is set by early pam modules and
+     * if not ask user for password.
+     */
+    pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+
+    if (!password) {
+        retval = pam_script_set_authtok(pamh, flags, argc, argv);
+        if (retval != PAM_SUCCESS) 
+            return retval;
+    }
 
     return pam_script_exec(pamh, "auth", PAM_SCRIPT_AUTH,
 	user, PAM_AUTH_ERR, argc, argv);
