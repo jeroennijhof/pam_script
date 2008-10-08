@@ -221,7 +221,7 @@ static int pam_script_exec(pam_handle_t *pamh,
 	return PAM_SUCCESS;
 }
 
-int pam_script_converse(pam_handle_t *pamh, int argc,
+static int pam_script_converse(pam_handle_t *pamh, int argc,
 	struct pam_message **message, struct pam_response **response)
 {
 	int retval;
@@ -235,7 +235,7 @@ int pam_script_converse(pam_handle_t *pamh, int argc,
 	return retval;
 }
 
-int pam_script_set_authtok(pam_handle_t *pamh, int flags,
+static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 	int argc, const char **argv)
 {
 	int	retval;
