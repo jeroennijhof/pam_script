@@ -189,6 +189,7 @@ static int pam_script_exec(pam_handle_t *pamh,
 	PAM_SCRIPT_SETENV(PAM_RHOST);
 	PAM_SCRIPT_SETENV(PAM_TTY);
 	PAM_SCRIPT_SETENV(PAM_AUTHTOK);
+	PAM_SCRIPT_SETENV(PAM_OLDAUTHTOK);
 
 	/* Execute external program */
 	/* fork process */
@@ -227,7 +228,7 @@ static int pam_script_converse(pam_handle_t *pamh, int argc,
 	int retval;
 	struct pam_conv *conv;
 
-	retval = pam_get_item(pamh, PAM_CONV, (const void **) &conv);
+	retval = pam_get_item(pamh, PAM_CONV, (const void **)(void *) &conv);
 	if (retval == PAM_SUCCESS) {
 		retval = conv->conv(argc, (const struct pam_message **) message,
 				response, conv->appdata_ptr);
@@ -236,7 +237,7 @@ static int pam_script_converse(pam_handle_t *pamh, int argc,
 }
 
 static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
-	int argc, const char **argv)
+	int argc, const char **argv, char *prompt)
 {
 	int	retval;
 	char	*password;
@@ -247,7 +248,7 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 	/* set up conversation call */
 	pmsg[0] = &msg[0];
 	msg[0].msg_style = PAM_PROMPT_ECHO_OFF;
-	msg[0].msg = "Password: ";
+	msg[0].msg = prompt;
 	response = NULL;
 
 	if ((retval = pam_script_converse(pamh, 1, pmsg, &response)) != PAM_SUCCESS)
@@ -269,6 +270,26 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 	return PAM_SUCCESS;
 }
 
+static int pam_script_senderr(pam_handle_t *pamh, int flags,
+	int argc, const char **argv, char *message)
+{
+	int retval;
+	struct pam_message msg[1],*pmsg[1];
+	struct pam_response *response;
+
+	/* set up conversation call */
+	pmsg[0] = &msg[0];
+	msg[0].msg_style = PAM_ERROR_MSG;
+	msg[0].msg = message;
+	response = NULL;
+
+	if ((retval = pam_script_converse(pamh, 1, pmsg, &response)) != PAM_SUCCESS)
+		return retval;
+
+	free(response);
+	return PAM_SUCCESS;
+}
+
 
 /* --- authentication management functions --- */
 
@@ -276,34 +297,34 @@ PAM_EXTERN
 int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
 			,const char **argv)
 {
-    int retval;
-    const char *user=NULL;
-    char *password;
+	int retval;
+	const char *user=NULL;
+	char *password;
 
-    if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
-	return retval;
+	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+		return retval;
 
-    /*
-     * Check if PAM_AUTHTOK is set by early pam modules and
-     * if not ask user for password.
-     */
-    pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+	/*
+	* Check if PAM_AUTHTOK is set by early pam modules and
+	* if not ask user for password.
+	*/
+	pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
 
-    if (!password) {
-        retval = pam_script_set_authtok(pamh, flags, argc, argv);
-        if (retval != PAM_SUCCESS) 
-            return retval;
-    }
+	if (!password) {
+		retval = pam_script_set_authtok(pamh, flags, argc, argv, "Password: ");
+		if (retval != PAM_SUCCESS) 
+			return retval;
+	}
 
-    return pam_script_exec(pamh, "auth", PAM_SCRIPT_AUTH,
-	user, PAM_AUTH_ERR, argc, argv);
+	return pam_script_exec(pamh, "auth", PAM_SCRIPT_AUTH,
+		user, PAM_AUTH_ERR, argc, argv);
 }
 
 PAM_EXTERN
 int pam_sm_setcred(pam_handle_t *pamh,int flags,int argc
 		   ,const char **argv)
 {
-     return PAM_SUCCESS;
+	return PAM_SUCCESS;
 }
 
 /* --- account management functions --- */
@@ -312,14 +333,14 @@ PAM_EXTERN
 int pam_sm_acct_mgmt(pam_handle_t *pamh,int flags,int argc
 		     ,const char **argv)
 {
-    int retval;
-    const char *user=NULL;
+	int retval;
+	const char *user=NULL;
 
-    if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
-	return retval;
+	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+		return retval;
 
-    return pam_script_exec(pamh, "account", PAM_SCRIPT_ACCT,
-	user,PAM_AUTH_ERR,argc,argv);
+	return pam_script_exec(pamh, "account", PAM_SCRIPT_ACCT,
+		user,PAM_AUTH_ERR,argc,argv);
 }
 
 /* --- password management --- */
@@ -328,16 +349,58 @@ PAM_EXTERN
 int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 		     ,const char **argv)
 {
-     int retval;
-     const char *user = NULL;
+	int retval;
+	const char *user = NULL;
+	char *password = NULL;
+        char new_password[BUFSIZE];
 
-     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
-	return retval;
+	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+		return retval;
 
-     if ( flags == PAM_UPDATE_AUTHTOK )
-	return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
-		user, PAM_AUTHTOK_ERR, argc, argv);
-     return PAM_SUCCESS;
+	if ( flags == PAM_UPDATE_AUTHTOK ) {
+		/*
+		 * Check if PAM_AUTHTOK is set by early pam modules and
+		 * if not ask user for password.
+		 */
+		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+		if (!password) {
+			retval = pam_script_set_authtok(pamh, flags, argc, argv, "Old password: ");
+			if (retval != PAM_SUCCESS)
+				return retval;
+			pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+		}
+
+		/*
+		 * Set PAM_OLDAUTHTOK with PAM_AUTHTOK and ask for the new password.
+		 */
+		pam_set_item(pamh, PAM_OLDAUTHTOK, password);
+
+		retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password: ");
+		if (retval != PAM_SUCCESS)
+			return retval;
+		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+		strncpy(new_password, password, BUFSIZE);
+		password = NULL;
+
+		retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password (again): ");
+		if (retval != PAM_SUCCESS)
+			return retval;
+		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+
+		/* Check if new password's are the same */
+		if (!strcmp(new_password, password)) {
+			return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
+				user, PAM_AUTHTOK_ERR, argc, argv);
+		}
+		else {
+			retval = pam_script_senderr(pamh, flags, argc, argv,
+					"You must enter the same password twice.");
+			if (retval != PAM_SUCCESS)
+				return retval;
+			return PAM_AUTHTOK_ERR;
+		}
+	}
+	return PAM_SUCCESS;
 }
 
 /* --- session management --- */
@@ -346,28 +409,28 @@ PAM_EXTERN
 int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
 			,const char **argv)
 {
-     int retval;
-     const char *user = NULL;
+	int retval;
+	const char *user = NULL;
 
-     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
-	return retval;
+	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+		return retval;
 
-     return pam_script_exec(pamh, "session", PAM_SCRIPT_SES_OPEN,
-	user, PAM_SESSION_ERR, argc, argv);
+	return pam_script_exec(pamh, "session", PAM_SCRIPT_SES_OPEN,
+		user, PAM_SESSION_ERR, argc, argv);
 }
 
 PAM_EXTERN
 int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
 			 ,const char **argv)
 {
-     int retval;
-     const char *user = NULL;
+	int retval;
+	const char *user = NULL;
 
-     if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
-	return retval;
+	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
+		return retval;
 
-     return pam_script_exec(pamh, "session", PAM_SCRIPT_SES_CLOSE,
-	user, PAM_SESSION_ERR, argc, argv);
+	return pam_script_exec(pamh, "session", PAM_SCRIPT_SES_CLOSE,
+		user, PAM_SESSION_ERR, argc, argv);
 }
 
 /* end of module definition */
@@ -377,13 +440,13 @@ int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
 /* static module data */
 
 struct pam_module _pam_script_modstruct = {
-    "pam_script",
-    pam_sm_authenticate,
-    pam_sm_setcred,
-    pam_sm_acct_mgmt,
-    pam_sm_open_session,
-    pam_sm_close_session,
-    pam_sm_chauthtok
+	"pam_script",
+	pam_sm_authenticate,
+	pam_sm_setcred,
+	pam_sm_acct_mgmt,
+	pam_sm_open_session,
+	pam_sm_close_session,
+	pam_sm_chauthtok
 };
 
 #endif
