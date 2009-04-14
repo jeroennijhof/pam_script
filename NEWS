@@ -7,6 +7,14 @@
 
 ****************************   Release 1.1 ******************************
 pam-script 1.1.2
+Apr 14, 2009			Jeroen Nijhof	<jeroen@nijhofnet.nl>
+	* Official release of pam-script 1.1.2
+
+pam-script 1.1.2
+Oct 21, 2008			Jeroen Nijhof	<jeroen@nijhofnet.nl>
+	* Added converse functionality.
+
+pam-script 1.1.2
 May 22, 2008			R.K. Owen	<rkowen@nersc.gov>
 	* Added the pam_script driver script and the ./pam-script.d/
 	  directory for an easy way for other packages to include
