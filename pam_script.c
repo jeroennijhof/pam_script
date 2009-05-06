@@ -181,16 +181,6 @@ static int pam_script_exec(pam_handle_t *pamh,
 		return retval;
 	}
 
-	/* Get PAM environment and place it in our environment */
-	PAM_SCRIPT_SETENV(PAM_SERVICE);
-	pam_script_setenv("PAM_TYPE", type);
-	pam_script_setenv("PAM_USER", user);
-	PAM_SCRIPT_SETENV(PAM_RUSER);
-	PAM_SCRIPT_SETENV(PAM_RHOST);
-	PAM_SCRIPT_SETENV(PAM_TTY);
-	PAM_SCRIPT_SETENV(PAM_AUTHTOK);
-	PAM_SCRIPT_SETENV(PAM_OLDAUTHTOK);
-
 	/* Execute external program */
 	/* fork process */
 	switch(child_pid = fork()) {
@@ -199,6 +189,16 @@ static int pam_script_exec(pam_handle_t *pamh,
 			"script %s fork failure", cmd);
 		return retval;
 	case  0:				/* child */
+		/* Get PAM environment, pass it onto the child's environment */
+		PAM_SCRIPT_SETENV(PAM_SERVICE);
+		pam_script_setenv("PAM_TYPE", type);
+		pam_script_setenv("PAM_USER", user);
+		PAM_SCRIPT_SETENV(PAM_RUSER);
+		PAM_SCRIPT_SETENV(PAM_RHOST);
+		PAM_SCRIPT_SETENV(PAM_TTY);
+		PAM_SCRIPT_SETENV(PAM_AUTHTOK);
+		PAM_SCRIPT_SETENV(PAM_OLDAUTHTOK);
+
 		/* construct newargv */
 		if (!(newargv = (char **) calloc(sizeof(char *), argc+2)))
 			return retval;
