@@ -33,7 +33,6 @@ if [ x"$fname" != x"pam_script" ]; then
 	esac
 
 	for script in $PAMSCRIPTDIR/*$mtype; do
-		echo $script
 		/bin/sh $script "$@" || PAM_SCRIPT_STATUS=1
 		export PAM_SCRIPT_STATUS
 	done
@@ -52,15 +51,15 @@ usage: $fname [-h][-v][-x][{-s|-r} moduletype] base_pam_script
 	-s moduletype		Set the links to base_pam_scriptfile as
 				a combination of auth,pass,ses_cl,ses_op
 				or session for both ses_cl and ses_op
-				or all for them all ... use commas to
-				separate the moduletypes
+				or 'all' for all moduletypes ... use commas
+				to separate the moduletypes
 	-r moduletype		Remove the same as above
 				If neither -s or -r is given then just
 				show the links
 
 	base_pam_script		which script to handle somehow
 
-Set the PAMSCRIPTDIR if you want links in a directory other than
+Set PAMSCRIPTDIR if you want links in a directory other than
 $basedir/pam-script.d
 
 !
