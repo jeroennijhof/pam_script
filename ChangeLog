@@ -1,3 +1,7 @@
+2009-05-06 08:08  rkowen
+	* fix [ Bugs-2787860 ] echo-ed script name from pam_script goes
+	to console.
+	* some minor doc changes
 
 2008-10-21 00:57  j-nijhof
 

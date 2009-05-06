@@ -32,7 +32,7 @@ failed with a non-zero return status.
 
 In addition, pam_script will set the PAM_SCRIPT_STATUS environment
 variable with the overall exit status so far, so the script can 
-choose whether to perform it's action or not.  If PAM_SCRIPT_STATUS
+choose whether to perform its action or not.  If PAM_SCRIPT_STATUS
 is already non-zero then there may be no point to run any further.
 However, some scripts may need to be run whether the PAM_SCRIPT_STATUS
 is non-zero or not.

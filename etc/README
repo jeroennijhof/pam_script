@@ -24,7 +24,7 @@ Whatever arguments that are not needed by pam_script.so are ignored and
 just passed on.
 
 The scripts must return an exit value of 0 if successful with
-regards to it's purpose; else return a non-zero exit value.  The
+regards to its purpose; else return a non-zero exit value.  The
 pam_script.so module does not interpret non-zero values as anything else
 except as the appropriate failure for the given module-type.
 
