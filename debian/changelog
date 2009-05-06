@@ -1,3 +1,10 @@
+pam-script (1.1.3-1ubuntu1) hardy; urgency=low
+
+  * fixed #2784468 leaky PAM_* environment
+  * fixed #2787860 extra "echo" in pam_script driver 
+
+ -- R.K. Owen <rkowen@stovokor.nersc.gov>  Wed, 06 May 2009 10:37:52 -0700
+
 pam-script (1.1.2-1ubuntu1) gutsy; urgency=low
 
   * passes all lintian tests (under Ubuntu)
