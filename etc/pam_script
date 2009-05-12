@@ -33,7 +33,9 @@ if [ x"$fname" != x"pam_script" ]; then
 	esac
 
 	for script in $PAMSCRIPTDIR/*$mtype; do
-		/bin/sh $script "$@" || PAM_SCRIPT_STATUS=1
+		if [ -e $script ]; then
+			/bin/sh $script "$@" || PAM_SCRIPT_STATUS=1
+		fi
 		export PAM_SCRIPT_STATUS
 	done
 	exit $PAM_SCRIPT_STATUS
