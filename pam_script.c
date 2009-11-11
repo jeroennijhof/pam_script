@@ -237,7 +237,7 @@ static int pam_script_converse(pam_handle_t *pamh, int argc,
 }
 
 static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
-	int argc, const char **argv, char *prompt)
+	int argc, const char **argv, char *prompt, int authtok)
 {
 	int	retval;
 	char	*password;
@@ -266,7 +266,7 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 		return PAM_CONV_ERR;
 
 	free(response);
-	pam_set_item(pamh, PAM_AUTHTOK, password);
+	pam_set_item(pamh, authtok, password);
 	return PAM_SUCCESS;
 }
 
@@ -311,7 +311,7 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
 	pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
 
 	if (!password) {
-		retval = pam_script_set_authtok(pamh, flags, argc, argv, "Password: ");
+		retval = pam_script_set_authtok(pamh, flags, argc, argv, "Password: ", PAM_AUTHTOK);
 		if (retval != PAM_SUCCESS) 
 			return retval;
 	}
@@ -359,46 +359,46 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 
 	if ( flags == PAM_UPDATE_AUTHTOK ) {
 		/*
-		 * Check if PAM_AUTHTOK is set by early pam modules and
-		 * if not ask user for password.
+		 * Check if PAM_OLDAUTHTOK is set by early pam modules and
+		 * if not ask user (not root) for current password.
 		 */
-		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
-		if (!password) {
-			retval = pam_script_set_authtok(pamh, flags, argc, argv, "Old password: ");
+		pam_get_item(pamh, PAM_OLDAUTHTOK, (void*) &password);
+		if (!password && !strcmp(user, "root")) {
+			retval = pam_script_set_authtok(pamh, flags, argc, argv, "Current password: ", PAM_OLDAUTHTOK);
 			if (retval != PAM_SUCCESS)
 				return retval;
-			pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+			pam_get_item(pamh, PAM_OLDAUTHTOK, (void*) &password);
 		}
 
 		/*
-		 * Set PAM_OLDAUTHTOK with PAM_AUTHTOK and ask for the new password.
+		 * Check if PAM_AUTHTOK is set by early pam modules and 
+		 * if not ask user for the new password.
 		 */
-		pam_set_item(pamh, PAM_OLDAUTHTOK, password);
-
-		retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password: ");
-		if (retval != PAM_SUCCESS)
-			return retval;
 		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
-		strncpy(new_password, password, BUFSIZE);
-		password = NULL;
-
-		retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password (again): ");
-		if (retval != PAM_SUCCESS)
-			return retval;
-		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
-
-		/* Check if new password's are the same */
-		if (!strcmp(new_password, password)) {
-			return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
-				user, PAM_AUTHTOK_ERR, argc, argv);
-		}
-		else {
-			retval = pam_script_senderr(pamh, flags, argc, argv,
-					"You must enter the same password twice.");
+		if (!password) {
+			retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password: ", PAM_AUTHTOK);
 			if (retval != PAM_SUCCESS)
 				return retval;
-			return PAM_AUTHTOK_ERR;
+			pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+			strncpy(new_password, password, BUFSIZE);
+			password = NULL;
+
+			retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password (again): ", PAM_AUTHTOK);
+			if (retval != PAM_SUCCESS)
+				return retval;
+			pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+
+			/* Check if new password's are the same */
+			if (strcmp(new_password, password)) {
+				retval = pam_script_senderr(pamh, flags, argc, argv,
+						"You must enter the same password twice.");
+				if (retval != PAM_SUCCESS)
+					return retval;
+				return PAM_AUTHTOK_ERR;
+			}
 		}
+		return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
+			user, PAM_AUTHTOK_ERR, argc, argv);
 	}
 	return PAM_SUCCESS;
 }

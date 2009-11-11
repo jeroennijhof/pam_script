@@ -28,7 +28,7 @@ Module-type and Scripts:
 
 	All the scripts will be passed several environment variables:
 	  PAM_USER, PAM_RUSER, PAM_RHOST, PAM_SERVICE, PAM_AUTHTOK,
-	  PAM_TTY, and PAM_TYPE referring to the module-type.
+	  PAM_OLDAUTHTOK, PAM_TTY, and PAM_TYPE referring to the module-type.
 	Whether the variable has a non-null value or not depends on the
 	context.
 

@@ -17,6 +17,7 @@ several environment variables:
 	PAM_RHOST	- remote host
 	PAM_TTY		- the controlling tty
 	PAM_AUTHTOK	- password in readable text
+	PAM_OLDAUTHTOK	- old password in readable text
 
 Also the scripts will receive on the command line the arguments
 sent to pam_script.so as configured in the PAM configuration file(s).
