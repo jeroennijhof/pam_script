@@ -1,20 +1,20 @@
-."                                      Hey, EMACS: -*- nroff -*-
-." First parameter, NAME, should be all caps
-." Second parameter, SECTION, should be 1-8, maybe w/ subsection
-." other parameters are allowed: see man(7), man(1)
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
 .TH PAM-SCRIPT 7 "August 22, 2007"
-." Please adjust this date whenever revising the manpage.
-."
-." Some roff macros, for reference:
-." .nh        disable hyphenation
-." .hy        enable hyphenation
-." .ad l      left justify
-." .ad b      justify to both left and right margins
-." .nf        disable filling
-." .fi        enable filling
-." .br        insert line break
-." .sp <n>    insert n+1 empty lines
-." for manpage-specific macros, see man(7)
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
 .SH NAME
 pam-script \- a PAM module that can invoke scripts within the PAM stack.
 
@@ -40,9 +40,9 @@ exits with a non-zero value this would cause the user to be
 denied SSH access to the machine.
 
 .PP
-." TeX users may be more comfortable with the \fB<whatever>\fP and
-." \fI<whatever>\fP escape sequences to invode bold face and italics, 
-." respectively.
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
 .SH OPTIONS
 A summary of options is included below.
 .TP

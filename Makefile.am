@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.14 2008/05/22 23:27:25 rkowen Exp $
+## Versions:    $Id: Makefile.am,v 1.15 2010/06/03 12:38:48 j-nijhof Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -14,7 +14,7 @@
 
 ACLOCAL_AMFLAGS= -I config
 
-man_MANS = debian/pam-script.7
+man_MANS = pam-script.7
 
 moduledir = @libdir@
 module_LTLIBRARIES = pam_script.la

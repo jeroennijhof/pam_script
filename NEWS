@@ -7,6 +7,7 @@
 
 ****************************   Release 1.1 ******************************
 pam-script 1.1.4		Jeroen Nijhof	<jeroen@nijhofnet.nl>
+	* Moved the manpage to the correct path
 	* fixed bug 2871389 - pam_sm_chauthtok() should first set
 	  PAM_OLDAUTHTOK and not PAM_AUTHTOK. PAM_AUTHTOK should
 	  contain the new password.
