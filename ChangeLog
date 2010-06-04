@@ -1,6 +1,10 @@
 Do Not Edit!  This is a generated file.
 	You should edit the NEWS file instead.
 
+2010-06-04 11:52  j-nijhof
+
+	* NEWS: Added 1.1.4 to NEWS
+
 2010-06-03 14:38  j-nijhof
 
 	* Makefile.am, NEWS, configure.ac, pam-script.7.in,
