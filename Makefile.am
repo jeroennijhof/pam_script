@@ -1,7 +1,7 @@
 ###########################################################################
 ##
 ## File:        ./Makefile.am
-## Versions:    $Id: Makefile.am,v 1.15 2010/06/03 12:38:48 j-nijhof Exp $
+## Versions:    $Id: Makefile.am,v 1.16 2010/06/14 12:50:57 j-nijhof Exp $
 ## Created:     2002/06/14
 ##
 ###########################################################################
@@ -24,7 +24,6 @@ pam_script_la_LDFLAGS = -module -avoid-version
 
 EXTRA_DIST=					\
 	pam-script.spec				\
-	debian					\
 	etc
 
 CL: rmChangeLog

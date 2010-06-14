@@ -1,6 +1,6 @@
 dnl
 dnl File:        configure.in
-dnl Revision:    $Id: configure.ac,v 1.13 2010/06/03 12:38:49 j-nijhof Exp $
+dnl Revision:    $Id: configure.ac,v 1.14 2010/06/14 12:50:57 j-nijhof Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
@@ -14,7 +14,7 @@ AC_PREREQ(2.59)
 AC_COPYRIGHT([
 See the included file: COPYING for copyright information.
 ])
-AC_INIT(pam-script, 1.1.3, [jnijhof@nijhofnet.nl,rkowen@nersc.gov])
+AC_INIT(pam-script, 1.1.4, [jeroen@nijhofnet.nl,rkowen@nersc.gov])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE(1.9.6)
 AC_CONFIG_SRCDIR([pam_script.c])
