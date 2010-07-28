@@ -294,8 +294,8 @@ static int pam_script_senderr(pam_handle_t *pamh, int flags,
 /* --- authentication management functions --- */
 
 PAM_EXTERN
-int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
-			,const char **argv)
+int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
+			const char **argv)
 {
 	int retval;
 	const char *user=NULL;
@@ -321,8 +321,8 @@ int pam_sm_authenticate(pam_handle_t *pamh,int flags,int argc
 }
 
 PAM_EXTERN
-int pam_sm_setcred(pam_handle_t *pamh,int flags,int argc
-		   ,const char **argv)
+int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc,
+		   const char **argv)
 {
 	return PAM_SUCCESS;
 }
@@ -330,8 +330,8 @@ int pam_sm_setcred(pam_handle_t *pamh,int flags,int argc
 /* --- account management functions --- */
 
 PAM_EXTERN
-int pam_sm_acct_mgmt(pam_handle_t *pamh,int flags,int argc
-		     ,const char **argv)
+int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc,
+		     const char **argv)
 {
 	int retval;
 	const char *user=NULL;
@@ -346,8 +346,8 @@ int pam_sm_acct_mgmt(pam_handle_t *pamh,int flags,int argc
 /* --- password management --- */
 
 PAM_EXTERN
-int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
-		     ,const char **argv)
+int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
+		     const char **argv)
 {
 	int retval;
 	const char *user = NULL;
@@ -357,7 +357,7 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 		return retval;
 
-	if ( flags == PAM_UPDATE_AUTHTOK ) {
+	if ( flags & PAM_UPDATE_AUTHTOK ) {
 		/*
 		 * Check if PAM_OLDAUTHTOK is set by early pam modules and
 		 * if not ask user (not root) for current password.
@@ -406,8 +406,8 @@ int pam_sm_chauthtok(pam_handle_t *pamh,int flags,int argc
 /* --- session management --- */
 
 PAM_EXTERN
-int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
-			,const char **argv)
+int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc,
+			const char **argv)
 {
 	int retval;
 	const char *user = NULL;
@@ -420,8 +420,8 @@ int pam_sm_open_session(pam_handle_t *pamh,int flags,int argc
 }
 
 PAM_EXTERN
-int pam_sm_close_session(pam_handle_t *pamh,int flags,int argc
-			 ,const char **argv)
+int pam_sm_close_session(pam_handle_t *pamh, int flags, int argc,
+			 const char **argv)
 {
 	int retval;
 	const char *user = NULL;
