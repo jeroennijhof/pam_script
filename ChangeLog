@@ -1,98 +1,123 @@
-Do Not Edit!  This is a generated file.
-	You should edit the NEWS file instead.
+2010-12-23  Jeroen Nijhof <jeroenn@saralt0078.(none)>
 
-2010-06-04 11:52  j-nijhof
+	* .cvsignore, .gitignore, cvs2cl.pl, git2cl.pl: Changed cvs specific
+	stuff to git
 
-	* NEWS: Added 1.1.4 to NEWS
+2010-07-28  j-nijhof <j-nijhof>
 
-2010-06-03 14:38  j-nijhof
+	* NEWS, pam_script.c: fixed an expression in function
+	pam_sm_chauthtok() used == for flags instead of a binary logic bit
+	operator, report and fix by Mikolaj Kucharski.
 
-	* Makefile.am, NEWS, configure.ac, pam-script.7.in,
-	debian/libpam-script.manpages, debian/pam-script.7.in: * Moved the
-	man page to the correct path
+2010-06-14  j-nijhof <j-nijhof>
 
-2009-11-11 16:19  j-nijhof
+	* Makefile.am, configure.ac, debian/changelog: Changed version
+	number to 1.1.4 configure.ac and debian/changelog.  Removed debian
+	from make dist to be compatible for official debian packaging.
 
-	* NEWS, README, pam_script.c, etc/README: * fixed bug 2871389 -
-	pam_sm_chauthtok() should first set   PAM_OLDAUTHTOK and not
-	PAM_AUTHTOK. PAM_AUTHTOK should   contain the new password.  *
-	pam_sm_chauthtok() - Don't ask current password for user root.
+2010-06-04  j-nijhof <j-nijhof>
 
-2009-05-12 18:25  rkowen
+	* ChangeLog: * New changelog
+
+2010-06-04  j-nijhof <j-nijhof>
+
+	* NEWS: * NEWS: Added 1.1.4 to NEWS
+
+2010-06-03  j-nijhof <j-nijhof>
+
+	* ChangeLog: [no log message]
+
+2010-06-03  j-nijhof <j-nijhof>
+
+	* Makefile.am, NEWS, configure.ac, debian/libpam-script.manpages,
+	debian/pam-script.7.in, pam-script.7.in: * Moved the man page to the correct path
+
+2009-11-11  j-nijhof <j-nijhof>
+
+	* NEWS, README, etc/README, pam_script.c: * fixed bug 2871389 - pam_sm_chauthtok() should first set   PAM_OLDAUTHTOK and not PAM_AUTHTOK. PAM_AUTHTOK should   contain the new password.  * pam_sm_chauthtok() - Don't ask current password for user root.
+
+2009-05-12  rkowen <rkowen>
 
 	* etc/pam_script: Discovered some glob weirdness when the
 	./pam-script.d/ dir is empty.
 
-2009-05-07 19:28  rkowen
+2009-05-07  rkowen <rkowen>
+
+	* ChangeLog: updated
+
+2009-05-07  rkowen <rkowen>
 
 	* NEWS: Added 1.1.3 to NEWS
 
-2009-05-06 20:04  rkowen
+2009-05-06  rkowen <rkowen>
+
+	* ChangeLog: updated.
+
+2009-05-06  rkowen <rkowen>
 
 	* configure.ac, debian/changelog: Advanced the version number to
 	1.1.3
 
-2009-05-06 20:04  rkowen
+2009-05-06  rkowen <rkowen>
 
 	* pam_script.c: Moved the PAM_* environment set-up to the child
 	process prior to executing the local pam-script.
 
-2009-05-06 17:12  rkowen
+2009-05-06  rkowen <rkowen>
 
-	* debian/copyright, etc/README, etc/README.pam_script: Minor
-	grammar changes.
+	* ChangeLog, debian/copyright, etc/README, etc/README.pam_script: 
+	Minor grammar changes.
 
-2009-05-06 16:39  rkowen
+2009-05-06  rkowen <rkowen>
 
 	* INSTALL: Added blurb on "make uninstall"
 
-2009-05-06 16:39  rkowen
+2009-05-06  rkowen <rkowen>
 
 	* etc/pam_script: Removed extraneous "echo $script".
 
-2009-04-14 09:05  j-nijhof
+2009-04-14  j-nijhof <j-nijhof>
 
-	* NEWS: Official release of pam-script 1.1.2
+	* ChangeLog, NEWS: Official release of pam-script 1.1.2
 
-2008-10-21 00:57  j-nijhof
+2008-10-20  j-nijhof <j-nijhof>
 
-	* pam_script.c: * Finished pam_sm_chauthtok(), it now's fill
-	PAM_AUTHTOK and PAM_OLDAUTHTOK	 environment variable which can be
-	used in pam_script_passwd * Fixed layout
+	* pam_script.c: * Finished pam_sm_chauthtok(), it now's fill PAM_AUTHTOK and
+	  PAM_OLDAUTHTOK environment variable which can be used in
+	pam_script_passwd * Fixed layout
 
-2008-10-08 20:57  j-nijhof
+2008-10-08  j-nijhof <j-nijhof>
 
-	* pam_script.c: * Changed pam_script_converse() and
-	pam_script_set_authtok() to static functions.
+	* pam_script.c: * Changed pam_script_converse() and pam_script_set_authtok() to
+	static functions.
 
-2008-10-07 22:33  j-nijhof
+2008-10-07  j-nijhof <j-nijhof>
 
-	* pam_script.c: * Added pam_script_converse(),
-	pam_script_set_authtok() for converse functionality   in
-	pam_sm_authenticate().	  If there are no early pam modules to get
-	a password from pam_script ask for a	password. So it's now
-	possible to use the pam_script module alone.
+	* pam_script.c: * Added pam_script_converse(), pam_script_set_authtok() for converse
+	  functionality in pam_sm_authenticate().    If there are no early pam modules to get a password from
+	  pam_script ask for a password. So it's now possible to use the
+	pam_script module alone.
 
-2008-05-23 01:27  rkowen
+2008-05-22  rkowen <rkowen>
+
+	* ChangeLog: [no log message]
+
+2008-05-22  rkowen <rkowen>
 
 	* .cvsignore, Makefile.am, NEWS, configure.ac, debian/.cvsignore,
 	debian/changelog, debian/control, debian/libpam-script.dirs,
 	debian/libpam-script.docs, debian/libpam-script.links,
 	debian/libpam-script.manpages, debian/rules, etc/README.pam_script,
-	etc/pam_script: pam-script 1.1.2 May 22, 2008		      R.K.
-	Owen	   <rkowen@nersc.gov> * Added the pam_script driver script
-	and the ./pam-script.d/   directory for an easy way for other
-	packages to include   PAM capability via pam-script (suggested by
-	Petter Reinholdtsen).  * Further improvements in the Debian/Ubuntu
-	packaging.
+	etc/pam_script: pam-script 1.1.2 May 22, 2008			R.K. Owen
+	<rkowen@nersc.gov> * Added the pam_script driver script and the ./pam-script.d/   directory for an easy way for other packages to include   PAM capability via pam-script (suggested by Petter Reinholdtsen).  * Further improvements in the Debian/Ubuntu packaging.
 
-2008-05-09 00:43  rkowen
+2008-05-08  rkowen <rkowen>
 
-	* etc/: README, README.examples, README.pam_script, pam_script:
-	Added the pam_script tool for handling the programs in
-	./pam-script.d/
+	* etc/README, etc/README.examples, etc/README.pam_script,
+	etc/pam_script: Added the pam_script tool for handling the programs
+	in ./pam-script.d/
 
-2008-05-07 23:38  rkowen
+2008-05-07  rkowen <rkowen>
 
 	* README, debian/changelog, debian/control, debian/copyright,
 	debian/libpam-script.examples, debian/pam-script-examples.dirs,
@@ -100,94 +125,118 @@ Do Not Edit!  This is a generated file.
 	debian/rules: Changing the Debian packaging to adhere to Debian
 	policy, and to resolve some lintian issues.
 
-2008-04-22 18:45  rkowen
+2008-04-22  rkowen <rkowen>
 
-	* debian/: README.Debian, control: Further refinement of what
+	* debian/README.Debian, debian/control: Further refinement of what
 	packages are needed to build a Debian package.
 
-2008-04-21 23:57  rkowen
+2008-04-21  rkowen <rkowen>
 
-	* debian/: README.Debian, changelog: More fixes with the debian
+	* debian/README.Debian, debian/changelog: More fixes with the debian
 	package building.
 
-2008-02-05 17:52  rkowen
+2008-02-05  rkowen <rkowen>
+
+	* ChangeLog: Updated
+
+2008-02-05  rkowen <rkowen>
 
 	* NEWS: Updated with 1.1.1 changes
 
-2008-02-05 17:49  rkowen
+2008-02-05  rkowen <rkowen>
 
-	* configure.ac: Upgrade the minor version for these trivial
-	changes.
+	* configure.ac: Upgrade the minor version for these trivial changes.
 
-2008-02-05 17:47  rkowen
+2008-02-05  rkowen <rkowen>
 
 	* debian/README.Debian: Clarified the Debian/Ubuntu instructions.
 
-2008-02-05 17:46  rkowen
+2008-02-05  rkowen <rkowen>
 
 	* pam_script.c: Need to have any conditional inclusions after
 	config.h
 
-2007-12-12 18:42  rkowen
+2007-12-12  rkowen <rkowen>
+
+	* ChangeLog: Updated.
+
+2007-12-12  rkowen <rkowen>
 
 	* NEWS: Ready for official release.
 
-2007-12-12 18:36  rkowen
+2007-12-12  rkowen <rkowen>
+
+	* ChangeLog: Updated
+
+2007-12-12  rkowen <rkowen>
 
 	* Makefile.am: Fixing sourceforge uploading
 
-2007-12-12 18:29  rkowen
+2007-12-12  rkowen <rkowen>
 
-	* .ftp.sf, Makefile.am, config/.README: More release preparation.
+	* ChangeLog: Updated.
 
-2007-12-12 18:19  rkowen
+2007-12-12  rkowen <rkowen>
 
-	* INSTALL, Makefile.am, configure.ac: Added distribution specific
-	targets in Makefile.
+	* .ftp.sf, ChangeLog, Makefile.am, config/.README: More release
+	preparation.
 
-2007-12-12 17:55  rkowen
+2007-12-12  rkowen <rkowen>
+
+	* ChangeLog, INSTALL, Makefile.am, configure.ac: Added distribution
+	specific targets in Makefile.
+
+2007-12-12  rkowen <rkowen>
 
 	* README: Updated the README info, in preparation for release.
 
-2007-09-07 17:26  rkowen
+2007-09-07  rkowen <rkowen>
 
-	* NEWS: Note that rpms can now be generated.
+	* ChangeLog: Updated.
 
-2007-09-07 17:24  rkowen
+2007-09-07  rkowen <rkowen>
+
+	* ChangeLog, NEWS: Note that rpms can now be generated.
+
+2007-09-07  rkowen <rkowen>
 
 	* .cvsignore, etc/tally: Need to override the umask.
 
-2007-09-07 17:12  rkowen
+2007-09-07  rkowen <rkowen>
 
-	* etc/: README.examples, logscript, tally: The example support
+	* etc/README.examples, etc/logscript, etc/tally: The example support
 	files need to have permissive access.
 
-2007-09-07 01:17  rkowen
+2007-09-06  rkowen <rkowen>
 
 	* Makefile.am, configure.ac, pam-script.spec.in: Crafted a working
 	rpm spec file.
 
-2007-09-05 23:36  rkowen
+2007-09-05  rkowen <rkowen>
+
+	* ChangeLog: Updated
+
+2007-09-05  rkowen <rkowen>
 
 	* NEWS: Added the debian packaging notice.
 
-2007-09-05 23:35  rkowen
+2007-09-05  rkowen <rkowen>
 
 	* Makefile.am, debian/pam-script-examples.files,
 	debian/pam-script-examples.install,
 	debian/pam-script-module.install, debian/rules: Got the debian
 	packaging the way I want it.
 
-2007-09-05 23:34  rkowen
+2007-09-05  rkowen <rkowen>
 
 	* pam_script.c: Need stdlib.h for calloc() as well as setenv() and
 	putenv().
 
-2007-09-05 23:33  rkowen
+2007-09-05  rkowen <rkowen>
 
 	* etc/README.examples: Fixed reference to tally.
 
-2007-09-05 00:14  rkowen
+2007-09-04  rkowen <rkowen>
 
 	* Makefile.am, debian/README.Debian, debian/control,
 	debian/pam-script-examples.dirs,
@@ -195,154 +244,161 @@ Do Not Edit!  This is a generated file.
 	debian/pam-script-module.install, debian/rules, etc/README,
 	etc/README.examples: Changes for creating two debian packages.
 
-2007-09-05 00:14  rkowen
+2007-09-04  rkowen <rkowen>
 
 	* pam_script.c: Changes to remove any compiler warnings.
 
-2007-08-31 19:43  rkowen
+2007-08-31  rkowen <rkowen>
+
+	* ChangeLog: Updated.
+
+2007-08-31  rkowen <rkowen>
 
 	* NEWS: Updated with the tally example.
 
-2007-08-31 19:40  rkowen
+2007-08-31  rkowen <rkowen>
 
 	* .cvsignore, debian/.cvsignore: Ignore more generated files.
 
-2007-08-31 19:40  rkowen
+2007-08-31  rkowen <rkowen>
 
 	* etc/tally: Need to give a specific #! line and not a generic
 	search for perl concoction.
 
-2007-08-31 19:38  rkowen
+2007-08-31  rkowen <rkowen>
 
 	* pam_script.c: pam_script_exec() should only return PAM_SUCCESS or
 	the return value given ...  not what the script returns else this
 	confuses PAM which will give incorrect error messages.
 
-2007-08-31 18:35  rkowen
+2007-08-31  rkowen <rkowen>
 
 	* Makefile.am: Added a target for just copying all of the example
 	scripts.
 
-2007-08-31 18:34  rkowen
+2007-08-31  rkowen <rkowen>
 
 	* etc/README: Hopefully, made the documentation clearer.
 
-2007-08-31 18:10  rkowen
+2007-08-31  rkowen <rkowen>
 
-	* etc/: README, tally: Fine tuned the lock_time and unlock_time
+	* etc/README, etc/tally: Fine tuned the lock_time and unlock_time
 	algorithm.
 
-2007-08-31 01:32  rkowen
+2007-08-30  rkowen <rkowen>
 
 	* Makefile.am: Added install-logger and install-tally targets.
 
-2007-08-31 01:32  rkowen
+2007-08-30  rkowen <rkowen>
 
 	* configure.ac: Added the items indicated by another autoscan.
 
-2007-08-31 01:26  rkowen
+2007-08-30  rkowen <rkowen>
 
-	* etc/: README, tally: Added another example - tally, which
+	* etc/README, etc/tally: Added another example - tally, which
 	implements something similar to the pam-tally.so module.
 
-2007-08-29 23:22  rkowen
+2007-08-29  rkowen <rkowen>
 
-	* NEWS, README, pam_script.c, debian/pam-script.7.in,
-	etc/logscript: Switched from using the system() command to
-	fork()/execve(), so the pam_script.so arguments could be passed on
-	to the scripts.  Therefore, a single script could be distributed to
-	many systems in an organization, but custom behavior could be
-	flagged in the pam.conf.
+	* ChangeLog: Updated.
 
-2007-08-29 00:07  rkowen
+2007-08-29  rkowen <rkowen>
 
-	* NEWS: Updated the NEWS.
+	* NEWS, README, debian/pam-script.7.in, etc/logscript, pam_script.c: 
+	Switched from using the system() command to fork()/execve(), so the
+	pam_script.so arguments could be passed on to the scripts.
+	Therefore, a single script could be distributed to many systems in
+	an organization, but custom behavior could be flagged in the
+	pam.conf.
 
-2007-08-28 23:59  rkowen
+2007-08-28  rkowen <rkowen>
 
-	* Makefile.am, etc/README, etc/logscript: Added an example
-	pam-script, which logs the PAM_* env.vars to a file.
+	* ChangeLog, NEWS: Updated the NEWS.
 
-2007-08-28 23:58  rkowen
+2007-08-28  rkowen <rkowen>
+
+	* ChangeLog, Makefile.am, etc/README, etc/logscript: Added an
+	example pam-script, which logs the PAM_* env.vars to a file.
+
+2007-08-28  rkowen <rkowen>
 
 	* pam_script.c: Should set the PAM_* env.vars to NULL if not
 	present, else random garbage will be passed along.
 
-2007-08-28 00:28  rkowen
+2007-08-27  rkowen <rkowen>
 
-	* Makefile.am, configure.ac, pam_script.c, debian/pam-script.7.in:
+	* Makefile.am, configure.ac, debian/pam-script.7.in, pam_script.c: 
 	Added the dir=/some/path/ option to pam_script.so .  Seeing that
 	snprintf() was no longer needed, now that the "complex" string
 	formatting is nicely handled by strcpy() and strcat() and friends,
 	eliminated the configure test for snprintf().
 
-2007-08-27 23:57  rkowen
+2007-08-27  rkowen <rkowen>
 
-	* configure.ac, pam_script.c, debian/pam-script.7.in: Expanded the
+	* configure.ac, debian/pam-script.7.in, pam_script.c: Expanded the
 	list of env.vars. passed to the scripts.  Aggregated the setenv()
 	code to an internal routine pam_script_setenv() and use setenv() or
 	putenv() depending on their existence.
 
-2007-08-27 20:16  rkowen
+2007-08-27  rkowen <rkowen>
 
-	* README, pam_script.c, debian/pam-script.7.in: Added a functioning
+	* README, debian/pam-script.7.in, pam_script.c: Added a functioning
 	handler to the "account" module-type; so a script, pam_script_acct,
 	could be called.  Also moved the PAM_SM_* definitions to ahead of
 	the security/pam_module.h header file so the the prototypes for
 	static modules are properly declared.
 
-2007-08-24 05:52  rkowen
+2007-08-24  rkowen <rkowen>
 
 	* Makefile.am, configure.ac, debian/README.Debian,
 	debian/changelog, debian/control, debian/copyright,
 	debian/pam-script-module.dirs, debian/pam-script-module.install,
 	debian/pam-script.7.in, debian/rules: Started the debian packaging.
 
-2007-08-23 21:33  j-nijhof
+2007-08-23  j-nijhof <j-nijhof>
 
 	* pam_script.c: [no log message]
 
-2007-08-23 21:32  j-nijhof
+2007-08-23  j-nijhof <j-nijhof>
 
-	* pam_script.c: - fixed segfault at 'check for pam.conf options'
-	part, rewritten it to old style argv handling - added PAM_USER,
-	PAM_RHOST, PAM_SERVICE and PAM_AUTHTOK for use with environment -
-	fixed default retval not PAM_SUCCESS but rv because otherwise
+	* pam_script.c: - fixed segfault at 'check for pam.conf options' part, rewritten it
+	to old style argv handling - added PAM_USER, PAM_RHOST, PAM_SERVICE and PAM_AUTHTOK for use
+	with environment - fixed default retval not PAM_SUCCESS but rv because otherwise
 	everyone can enter the system if the program's are missing.
 
-2007-08-23 17:28  rkowen
+2007-08-23  rkowen <rkowen>
 
 	* debian/pam-script.7.in: Added a man page.
 
-2007-08-22 22:47  rkowen
+2007-08-22  rkowen <rkowen>
 
 	* pam_script.c: PAM doesn't pass an argv vector if there are no
 	pam.conf options.
 
-2007-08-22 20:32  rkowen
+2007-08-22  rkowen <rkowen>
 
-	* .cvsignore, NEWS, README: Updated the documentation to the
-	current state.
+	* .cvsignore, ChangeLog, NEWS, README: Updated the documentation to
+	the current state.
 
-2007-08-22 19:06  rkowen
+2007-08-22  rkowen <rkowen>
 
 	* pam_script.c: Fixed the static PAM info.
 
-2007-08-22 18:46  rkowen
+2007-08-22  rkowen <rkowen>
 
 	* pam_script.c: Forgot strcmp() header file.
 
-2007-08-22 17:50  rkowen
+2007-08-22  rkowen <rkowen>
 
 	* configure.ac, pam_script.c: Check for vsyslog() and act
 	accordingly.
 
-2007-08-22 17:44  rkowen
+2007-08-22  rkowen <rkowen>
 
 	* README: Noted where to get the pamtest.c program from for
 	debugging.
 
-2007-08-22 17:43  rkowen
+2007-08-22  rkowen <rkowen>
 
 	* pam_script.c: Added the onerr=(success|fail) pam.conf option to
 	specify what the default behaviour if the scripts are not found or
@@ -350,39 +406,34 @@ Do Not Edit!  This is a generated file.
 	(--x--x--x) because never know who will be executing them.  syslog
 	any pam_script_get_user() errors.
 
-2007-08-22 00:07  rkowen
+2007-08-21  rkowen <rkowen>
 
-	* pam_script.c: Broke out the common code into static functions. 
-	Test for the script with stat(), and make sure it's executable. 
+	* pam_script.c: Broke out the common code into static functions.
+	Test for the script with stat(), and make sure it's executable.
 	Added syslog support.  Got it generally working.
 
-2007-08-21 20:47  j-nijhof
+2007-08-21  j-nijhof <j-nijhof>
 
-	* pam_script.c: - Fixed execution of macro for auth, session open
-	and session close.  - Added default value for macro PAM_SCRIPT_DIR
-	if not set.
+	* pam_script.c: - Fixed execution of macro for auth, session open and session close.  - Added default value for macro PAM_SCRIPT_DIR if not set.
 
-2007-08-21 00:32  rkowen
+2007-08-20  rkowen <rkowen>
 
 	* Makefile, Makefile.am, configure.ac, pam_script.c: The
 	pam_script_* programs are now pointed to by the sysconfdir in the
 	configure script.
 
-2007-08-17 23:32  rkowen
+2007-08-17  rkowen <rkowen>
 
 	* .cvsignore, config/.cvsignore: Have CVS ignore some of the
 	generated files.
 
-2007-08-17 23:29  rkowen
+2007-08-17  rkowen <rkowen>
 
-	* AUTHORS, INSTALL, Makefile.am, NEWS, configure.ac, cvs2cl.pl,
-	config/.README: Initial draft of autotool configuration files.
+	* AUTHORS, ChangeLog, INSTALL, Makefile.am, NEWS, config/.README,
+	configure.ac, cvs2cl.pl: Initial draft of autotool configuration
+	files.
 
-2005-03-16 22:20  j-nijhof
+2005-03-16  j-nijhof <j-nijhof>
 
-	* COPYING, Makefile, README, pam_script.c: Initial import.
-
-2005-03-16 22:20  j-nijhof
-
-	* COPYING, Makefile, README, pam_script.c: Initial revision
+	* Initial revision
 
