@@ -7,6 +7,8 @@
 
 ****************************   Release 1.1  ******************************
 pam-script 1.1.5		Jeroen Nijhof	<jeroen@nijhofnet.nl>
+	* AC_CHECK_HEADERS improvements for libpam header files
+	* Changed LOG_AUTHPRIV to LOG_AUTH for better syslog portability
 	* fixed an expression in function pam_sm_chauthtok() used ==
 	  for flags instead of a binary logic bit operator, report and
 	  fix by Mikolaj Kucharski. 

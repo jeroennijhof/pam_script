@@ -1,5 +1,5 @@
 /*
- *  Written by Jeroen Nijhof <jnijhof@nijhofnet.nl> 2005/03/01
+ *  Written by Jeroen Nijhof <jeroen@jeroennijhof.nl> 2005/03/01
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ static void pam_script_syslog(int priority, const char *format, ...) {
 	va_start(args, format);
 
 #if HAVE_VSYSLOG
-	openlog(PACKAGE, LOG_CONS|LOG_PID, LOG_AUTHPRIV);
+	openlog(PACKAGE, LOG_CONS|LOG_PID, LOG_AUTH);
 	vsyslog(priority, format, args);
 	closelog();
 #else

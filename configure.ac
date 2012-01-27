@@ -2,7 +2,7 @@ dnl
 dnl File:        configure.in
 dnl Revision:    $Id: configure.ac,v 1.14 2010/06/14 12:50:57 j-nijhof Exp $
 dnl Created:     2007/08/17
-dnl Author:      Jeroen Nijhof <jnijhof@nijhofnet.nl>
+dnl Author:      Jeroen Nijhof <jeroen@jeroennijhof.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
 dnl
 dnl Process this file with autoconf to produce a configure script
@@ -14,7 +14,7 @@ AC_PREREQ(2.59)
 AC_COPYRIGHT([
 See the included file: COPYING for copyright information.
 ])
-AC_INIT(pam-script, 1.1.4, [jeroen@nijhofnet.nl,rkowen@nersc.gov])
+AC_INIT(pam-script, 1.1.5, [jeroen@jeroennijhof.nl,rkowen@nersc.gov])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE(1.9.6)
 AC_CONFIG_SRCDIR([pam_script.c])
@@ -57,8 +57,10 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([string.h syslog.h unistd.h])
-AC_CHECK_HEADERS([security/pam_appl.h security/pam_modules.h],,
-[AC_MSG_ERROR([*** Sorry, you must install the PAM development module ***])])
+AC_CHECK_HEADERS([security/pam_appl.h], [],
+	[AC_MSG_ERROR([*** Sorry, you must install the PAM development module ***])])
+AC_CHECK_HEADERS([security/pam_modules.h], [], [],
+	[#include <security/pam_appl.h>])
 
 dnl --------------------------------------------------------------------
 dnl Checks for typedefs, structures, and compiler characteristics.

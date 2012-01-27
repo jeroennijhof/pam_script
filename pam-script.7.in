@@ -104,7 +104,7 @@ which can be used to modify the script behavior.
 and the PAM "The System Administrators' Guide"
 .SH AUTHOR
 .nf
-pam-script was written by Jeroen Nijhof <jnijhof@nijhofnet.nl>
+pam-script was written by Jeroen Nijhof <jeroen@jeroennijhof.nl>
 with some additions and modifications by R.K. Owen, Ph.D. <rkowen@nersc.gov>.
 .PP
 This manual page was written by R.K. Owen <rkowen@nersc.gov>,

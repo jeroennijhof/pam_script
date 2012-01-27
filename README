@@ -1,6 +1,6 @@
 README 
 
-PAM-script has been written by Jeroen Nijhof <jnijhof@nijhofnet.nl>
+PAM-script has been written by Jeroen Nijhof <jeroen@jeroennijhof.nl>
 with packaging and some modifications by R.K. Owen <rkowen@nersc.gov>.
 
 Description:
@@ -69,5 +69,5 @@ Look at the README.examples file, which may be located under
 
 Problem/BUGS report:
 If you find any bugs or problems just mail me
-	Jeroen Nijhof <jnijhof@nijhofnet.nl>
+	Jeroen Nijhof <jeroen@jeroennijhof.nl>
 
