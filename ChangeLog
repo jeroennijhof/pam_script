@@ -1,3 +1,17 @@
+2012-01-27  Jeroen <jeroen@nijhofnet.nl>
+
+	* .gitignore, AUTHORS, NEWS, README, configure.ac,
+	debian/copyright, pam-script.7.in, pam_script.c: * AC_CHECK_HEADERS improvements for libpam header files.
+
+2010-12-23  Jeroen Nijhof <jeroenn@saralt0078.(none)>
+
+	* ChangeLog: Updated ChangeLog
+
+2010-12-23  Jeroen Nijhof <jeroenn@saralt0078.(none)>
+
+	* config/.cvsignore, config/.gitignore, debian/.cvsignore,
+	debian/.gitignore: Updated ChangeLog
+
 2010-12-23  Jeroen Nijhof <jeroenn@saralt0078.(none)>
 
 	* .cvsignore, .gitignore, cvs2cl.pl, git2cl.pl: Changed cvs specific

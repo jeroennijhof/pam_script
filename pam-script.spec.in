@@ -4,7 +4,7 @@
 Summary: a PAM module that can invoke scripts within the PAM stack
 Name: pam-script
 Version: @VERSION@
-Release: 1
+Release: 2
 License: GPL
 Vendor: LBNL/NERSC
 Group: System Environment/Base
