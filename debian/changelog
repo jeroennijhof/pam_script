@@ -1,3 +1,10 @@
+libpam-script (1.1.6-1) unstable; urgency=low
+
+  * Added pam-auth-update support (thanks to Gaudenz Steinlin)
+  * Changed /debian to maintainer version
+
+ -- Jeroen Nijhof <jeroen@jeroennijhof.nl>  Mon, 7 May 2012 16:56:10 +0100
+
 libpam-script (1.1.5-1) unstable; urgency=low
 
   * New upstream release
