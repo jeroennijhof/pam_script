@@ -1,19 +1,18 @@
-pam-script for Debian
----------------------
+libpam-script for Debian
+-----------------
+Libpam-script is using /usr/share/libpam-script/ as the default location,
+for storing the scripts.
+Keep in mind that you need to create or symlink the following files:
 
-The pam-script module is placed in /lib/security/
-and the scripts are in /etc/pam-script/
-to include pam-script.so edit /etc/pam.d/common-*
+- pam_script_acct 
+- pam_script_auth	
+- pam_script_passwd
+- pam_script_ses_close
+- pam_script_ses_open
 
-Run script -c "dpkg-buildpackage" as root
-in the source directory above this one.
+Please read the man-page, README, README.pam_script and README.example file in 
+/usr/share/doc/libpam-script for further instructions.
 
-You will need the debhelper, autoconf, automake, libtool, gettext,
-and libpam0g-dev packages.
+Examples can be found in /usr/share/doc/libpam-script/examples/
 
-Look at the content list of the deb file with "dpkg -c"
-
-Change the version number by running "debchange -i" and add in the NEWS
-entries for the given version.
-
- -- R.K. Owen <rkowen@nersc.gov>, Thu, 23 Aug 2007 09:03:35 -0700
+ -- Martijn van Brummelen <martijn@brumit.nl>  Tue, 23 Mar 2010 21:18:25 +0100

@@ -1,3 +1,3 @@
-etc/README.examples
-etc/tally
 etc/logscript
+etc/pam_script
+etc/README.examples
