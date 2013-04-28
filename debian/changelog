@@ -1,3 +1,10 @@
+libpam-script (1.1.7-1) unstable; urgency=low
+
+  * New upstream release
+  * Moved from SF to Github
+
+ -- Jeroen Nijhof <jeroen@jeroennijhof.nl>  Sun, 28 Apr 2013 12:26:00 +0100
+
 libpam-script (1.1.6-1) unstable; urgency=low
 
   * Added pam-auth-update support (thanks to Gaudenz Steinlin)
