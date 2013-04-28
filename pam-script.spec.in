@@ -8,7 +8,7 @@ Release: 2
 License: GPL
 Vendor: LBNL/NERSC
 Group: System Environment/Base
-Source: https://github.com/chalcy0n/pam_script/archive/@VERSION@.tar.gz
+Source: https://github.com/jeroennijhof/pam_script/archive/@VERSION@.tar.gz
 BuildRoot: /var/tmp/%{name}-buildroot
 Provides: pam-script-@VERSION@
 Requires: pam
