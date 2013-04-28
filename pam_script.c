@@ -363,7 +363,7 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 		 * if not ask user (not root) for current password.
 		 */
 		pam_get_item(pamh, PAM_OLDAUTHTOK, (void*) &password);
-		if (!password && !strcmp(user, "root")) {
+		if (!password && strcmp(user, "root")) {
 			retval = pam_script_set_authtok(pamh, flags, argc, argv, "Current password: ", PAM_OLDAUTHTOK);
 			if (retval != PAM_SUCCESS)
 				return retval;
