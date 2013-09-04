@@ -39,7 +39,7 @@ authentication scheme.
 
 # pam-script
 ./configure	--prefix=/usr					\
-		--libdir=/lib/security				\
+		--libdir=/%{_lib}/security			\
 		--sysconfdir=/etc/pam-script			\
 		--mandir=/usr/share/man
 
@@ -59,7 +59,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %doc README
-/lib/security/pam_script.so
+/%{_lib}/security/pam_script.so
 /etc/pam-script/README
 /usr/share/man/man7/pam-script.7.gz
 
