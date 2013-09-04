@@ -8,7 +8,8 @@ Release: 2
 License: GPL
 Vendor: LBNL/NERSC
 Group: System Environment/Base
-Source: https://github.com/jeroennijhof/pam_script/archive/@VERSION@.tar.gz
+# See: http://fedoraproject.org/wiki/Packaging:SourceURL#Troublesome_URLs
+Source: https://github.com/jeroennijhof/pam_script/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRoot: /var/tmp/%{name}-buildroot
 Provides: pam-script-@VERSION@
 Requires: pam
@@ -66,3 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 /etc/pam-script/README.examples
 /etc/pam-script/logscript
 /etc/pam-script/tally
+/etc/pam-script/pam_script
+/etc/pam-script/pam_script_acct
+/etc/pam-script/pam_script_auth
+/etc/pam-script/pam_script_passwd
+/etc/pam-script/pam_script_ses_close
+/etc/pam-script/pam_script_ses_open
