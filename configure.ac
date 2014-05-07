@@ -1,27 +1,23 @@
 dnl
-dnl File:        configure.in
+dnl File:        configure.ac
 dnl Revision:    $Id: configure.ac,v 1.14 2010/06/14 12:50:57 j-nijhof Exp $
 dnl Created:     2007/08/17
 dnl Author:      Jeroen Nijhof <jeroen@jeroennijhof.nl>
 dnl              R.K. Owen <rkowen@nersc.gov>
 dnl
-dnl Process this file with autoconf to produce a configure script
-dnl You need autoconf 2.59 or better!
-dnl
 dnl ---------------------------------------------------------------------------
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.59])
 AC_COPYRIGHT([
 See the included file: COPYING for copyright information.
 ])
-AC_INIT(pam-script, 1.1.7, [jeroen@jeroennijhof.nl,rkowen@nersc.gov])
+AC_INIT([pam-script], [1.1.7], [jeroen@jeroennijhof.nl,rkowen@nersc.gov])
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE(1.9.6)
+AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([pam_script.c])
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([config])
 AC_AIX
-
-AM_DISABLE_STATIC
 
 dnl --------------------------------------------------------------------
 # Checks for programs.
@@ -29,7 +25,8 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AM_PROG_LIBTOOL
+
+LT_INIT([disable-static])
 
 dnl --------------------------------------------------------------------
 # Checks for libraries.

@@ -26,13 +26,6 @@ EXTRA_DIST=					\
 	pam-script.spec				\
 	etc
 
-CL: rmChangeLog
-	@echo "Updating ChangeLog"
-	-@./cvs2cl.pl
-
-rmChangeLog:
-	-@rm -f ChangeLog
-
 dist-hook:
 	-rm -rf `find $(distdir) -name CVS`
 
@@ -72,10 +65,6 @@ install-tally:
 		test -e $$f || $(LN_S) tally $$f; \
 	done
 
-ftp-sourceforge: dist
-	@echo "placing sourceforge.net files";
-	${SHELL} ./.ftp.sf $(DIST_ARCHIVES);
-
 help:
 	@echo ""
 	@echo "make		- compile sources to a shared library module"
@@ -93,6 +82,4 @@ disthelp:
 	@echo "make dist	- creates distribution tarballs"
 	@echo "make distclean	- cleans & removes most made files"
 	@echo "make maintainer-clean	- cleans even more"
-	@echo "make CL		- remakes the ChangeLog from the CVS commits"
-	@echo "make ftp-sourceforge	- upload to sourceforge"
 	@echo ""
