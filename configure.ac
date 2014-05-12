@@ -17,7 +17,7 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([pam_script.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([config])
-AC_AIX
+AC_USE_SYSTEM_EXTENSIONS
 
 dnl --------------------------------------------------------------------
 # Checks for programs.
