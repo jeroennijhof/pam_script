@@ -83,5 +83,5 @@ AC_CHECK_FUNCS([setenv putenv])
 
 dnl --------------------------------------------------------------------
 dnl Generate made files
-AC_CONFIG_FILES([Makefile pam-script.7 pam-script.spec])
+AC_CONFIG_FILES([Makefile pam-script.7])
 AC_OUTPUT

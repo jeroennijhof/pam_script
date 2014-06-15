@@ -23,7 +23,6 @@ pam_script_la_CFLAGS = $(AM_CFLAGS) -DPAM_SCRIPT_DIR="\"$(sysconfdir)\""
 pam_script_la_LDFLAGS = -module -avoid-version
 
 EXTRA_DIST=					\
-	pam-script.spec				\
 	etc
 
 dist-hook:
