@@ -25,7 +25,7 @@ pam_script allows you to execute scripts during authorization, password
 changes and session openings or closings.
 
 %prep
-%setup -qn %{upstream_name}-%{version}
+%setup -q
 
 cp etc/README etc/README.module_types
 autoreconf -vfi
