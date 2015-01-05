@@ -24,6 +24,8 @@
 #include <sys/wait.h>			/* wait */
 #include <unistd.h>			/* stat, fork, execve, **environ */
 #include <stdlib.h>			/* calloc, setenv, putenv */
+#include <errno.h>			/* errno */
+#include <signal.h>			/* signal, SIGCHLD, SIG_DFL */
 
 /* enable these module-types */
 #define PAM_SM_AUTH
@@ -181,6 +183,8 @@ static int pam_script_exec(pam_handle_t *pamh,
 		return retval;
 	}
 
+	signal(SIGCHLD, SIG_DFL);
+
 	/* Execute external program */
 	/* fork process */
 	switch(child_pid = fork()) {
@@ -213,7 +217,11 @@ static int pam_script_exec(pam_handle_t *pamh,
 		return retval;
 
 	default:				/* parent */
-		(void) waitpid(child_pid, &status, 0);
+		if (waitpid(child_pid, &status, 0) == -1) {
+			pam_script_syslog(LOG_ALERT,
+				"error waiting for child %d: %s", child_pid, strerror(errno));
+			return retval;
+		}
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status) ? rv : PAM_SUCCESS);
 		else
