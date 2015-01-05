@@ -25,7 +25,7 @@
 #include <unistd.h>			/* stat, fork, execve, **environ */
 #include <stdlib.h>			/* calloc, setenv, putenv */
 #include <errno.h>			/* errno */
-#include <signal.h>			/* signal, SIGCHLD, SIG_DFL */
+#include <signal.h>			/* signal, SIGCHLD, SIG_DFL, SIG_ERR */
 
 /* enable these module-types */
 #define PAM_SM_AUTH
@@ -183,7 +183,9 @@ static int pam_script_exec(pam_handle_t *pamh,
 		return retval;
 	}
 
-	signal(SIGCHLD, SIG_DFL);
+	if (signal(SIGCHLD, SIG_DFL) == SIG_ERR)
+		pam_script_syslog(LOG_WARNING,
+			"cannot reset SIGCHLD handler to the default");
 
 	/* Execute external program */
 	/* fork process */
