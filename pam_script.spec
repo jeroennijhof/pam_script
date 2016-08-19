@@ -4,7 +4,7 @@
 %global upstream_name pam-script
 
 Name:           pam_script
-Version:        1.1.7
+Version:        1.1.8
 Release:        1%{?dist}
 Summary:        PAM module for executing scripts
 
@@ -51,5 +51,8 @@ rm -rf %{buildroot}
 %{_mandir}/man7/%{upstream_name}.7*
 
 %changelog
+* Fri Aug 19 2016 Jeroen Nijhof <jeroen@jeroennijhof.nl> - 1.1.8-1
+- Fixed bug https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=817198
+
 * Tue Jun 24 2014 Jason Taylor <jason.taylor@secure-24.com> - 1.1.7-1
 - Initial Build

@@ -11,7 +11,7 @@ AC_PREREQ([2.59])
 AC_COPYRIGHT([
 See the included file: COPYING for copyright information.
 ])
-AC_INIT([pam-script], [1.1.7], [jeroen@jeroennijhof.nl,rkowen@nersc.gov])
+AC_INIT([pam-script], [1.1.8], [jeroen@jeroennijhof.nl,rkowen@nersc.gov])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([pam_script.c])
