@@ -1,3 +1,60 @@
+2016-08-19  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* NEWS, configure.ac, debian/changelog, pam_script.spec: Release
+	version 1.1.8
+
+2016-08-19  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* pam_script.c: Use snprintf to make sure we are dealing with
+	strings, solves:
+	https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=817198
+
+2014-06-26  jeroennijhof <jeroen@jeroennijhof.nl>
+
+	* : Merge pull request #3 from jmtaylor90/master updated spec for pull request
+
+2014-06-18  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* pam_script.spec: Setup patch by Jason, thanks!
+
+2014-06-15  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* Makefile.am, configure.ac, pam-script.spec.in, pam_script.spec: 
+	pam_script.spec rebuild by Jason Taylor
+
+2014-05-12  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* configure.ac: Changed AC_AIX to AC_USE_SYSTEM_EXTENSIONS
+
+2014-05-12  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* COPYING: Fixed some license issues, thanks Jason
+
+2014-05-07  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* Makefile.am, configure.ac: Merged autotools cleanups from Jason
+	Taylor
+
+2014-04-01  jeroennijhof <jeroen@jeroennijhof.nl>
+
+	* : Merge pull request #2 from yshh/master Modify spec file to work properly
+
+2013-09-04  Yusuke Hagihara <yusuke.hagihara@gmail.com>
+
+	* pam-script.spec.in: modify spec file to work properly * add list of files that were installed but not added to package * workaround Source url     * See:
+
+	http://fedoraproject.org/wiki/Packaging:SourceURL#Troublesome_URLs
+
+2013-04-28  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* debian/control, debian/watch, pam-script.spec.in: Changed github
+	account to jeroennijhof
+
+2013-04-28  Jeroen Nijhof <jeroen@jeroennijhof.nl>
+
+	* ChangeLog, NEWS, configure.ac, debian/changelog, debian/control,
+	debian/watch, pam-script.spec.in: * Release version: 1.1.7
+
 2013-04-28  Jeroen Nijhof <jeroen@jeroennijhof.nl>
 
 	* pam_script.c: Fixed strcmp issue, thanks to Andy Igoshin
@@ -40,13 +97,13 @@
 
 2010-12-23  Jeroen Nijhof <jeroenn@saralt0078.(none)>
 
-	* config/.cvsignore, config/.gitignore, debian/.cvsignore,
-	debian/.gitignore: Updated ChangeLog
+	* config/{.cvsignore => .gitignore}, debian/{.cvsignore =>
+	.gitignore}: Updated ChangeLog
 
 2010-12-23  Jeroen Nijhof <jeroenn@saralt0078.(none)>
 
-	* .cvsignore, .gitignore, cvs2cl.pl, git2cl.pl: Changed cvs specific
-	stuff to git
+	* .cvsignore => .gitignore, cvs2cl.pl, git2cl.pl: Changed cvs
+	specific stuff to git
 
 2010-07-28  j-nijhof <j-nijhof>
 
@@ -75,7 +132,7 @@
 2010-06-03  j-nijhof <j-nijhof>
 
 	* Makefile.am, NEWS, configure.ac, debian/libpam-script.manpages,
-	debian/pam-script.7.in, pam-script.7.in: * Moved the man page to the correct path
+	debian/pam-script.7.in => pam-script.7.in: * Moved the man page to the correct path
 
 2009-11-11  j-nijhof <j-nijhof>
 
@@ -153,8 +210,8 @@
 	debian/changelog, debian/control, debian/libpam-script.dirs,
 	debian/libpam-script.docs, debian/libpam-script.links,
 	debian/libpam-script.manpages, debian/rules, etc/README.pam_script,
-	etc/pam_script: pam-script 1.1.2 May 22, 2008			R.K. Owen
-	<rkowen@nersc.gov> * Added the pam_script driver script and the ./pam-script.d/   directory for an easy way for other packages to include   PAM capability via pam-script (suggested by Petter Reinholdtsen).  * Further improvements in the Debian/Ubuntu packaging.
+	etc/pam_script: pam-script 1.1.2 May 22, 2008
+	R.K. Owen       <rkowen@nersc.gov> * Added the pam_script driver script and the ./pam-script.d/   directory for an easy way for other packages to include   PAM capability via pam-script (suggested by Petter Reinholdtsen).  * Further improvements in the Debian/Ubuntu packaging.
 
 2008-05-08  rkowen <rkowen>
 
@@ -267,10 +324,9 @@
 
 2007-09-05  rkowen <rkowen>
 
-	* Makefile.am, debian/pam-script-examples.files,
-	debian/pam-script-examples.install,
-	debian/pam-script-module.install, debian/rules: Got the debian
-	packaging the way I want it.
+	* Makefile.am, debian/{pam-script-examples.install =>
+	pam-script-examples.files}, debian/pam-script-module.install,
+	debian/rules: Got the debian packaging the way I want it.
 
 2007-09-05  rkowen <rkowen>
 
