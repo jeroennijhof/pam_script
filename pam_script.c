@@ -146,16 +146,16 @@ static int pam_script_exec(pam_handle_t *pamh,
 
 	/* check for pam.conf options */
 	for (i = 0; i < argc; i++) {
-		if (!strncmp(argv[i],"onerr=",6)) {
-			if (!strcmp(argv[i],"onerr=fail"))
+		if (strncmp(argv[i],"onerr=",6) == 0) {
+			if (strcmp(argv[i],"onerr=fail") == 0)
 				retval = rv;
-			else if (!strcmp(argv[i],"onerr=success"))
+			else if (strcmp(argv[i],"onerr=success") == 0)
 				retval = PAM_SUCCESS;
 			else
 				pam_script_syslog(LOG_ERR,
 					"invalid option: %s", argv[i]);
 		}
-		if (!strncmp(argv[i],"dir=",4)) {
+		if (strncmp(argv[i],"dir=",4) == 0) {
 			if (argv[i] + 4) { /* got new scriptdir */
 				strncpy(cmd,argv[i] + 4, BUFSIZE - 2);
 			}
@@ -352,7 +352,8 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 	int retval;
 	const char *user = NULL;
 	char *password = NULL;
-        char new_password[BUFSIZE];
+        char new_pass1[BUFSIZE];
+        char new_pass2[BUFSIZE];
 
 	if ((retval = pam_script_get_user(pamh, &user)) != PAM_SUCCESS)
 		return retval;
@@ -363,7 +364,7 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 		 * if not ask user (not root) for current password.
 		 */
 		pam_get_item(pamh, PAM_OLDAUTHTOK, (void*) &password);
-		if (!password && strcmp(user, "root")) {
+		if (!password && strcmp(user, "root") != 0) {
 			retval = pam_script_set_authtok(pamh, flags, argc, argv, "Current password: ", PAM_OLDAUTHTOK);
 			if (retval != PAM_SUCCESS)
 				return retval;
@@ -380,16 +381,18 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 			if (retval != PAM_SUCCESS)
 				return retval;
 			pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
-			strncpy(new_password, password, BUFSIZE);
+			snprintf(new_pass1, BUFSIZE, "%s", password);
 			password = NULL;
 
 			retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password (again): ", PAM_AUTHTOK);
 			if (retval != PAM_SUCCESS)
 				return retval;
-			pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+			retval = pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
+			snprintf(new_pass2, BUFSIZE, "%s", password);
+			password = NULL;
 
 			/* Check if new password's are the same */
-			if (strcmp(new_password, password)) {
+			if (strcmp(new_pass1, new_pass2) != 0) {
 				retval = pam_script_senderr(pamh, flags, argc, argv,
 						"You must enter the same password twice.");
 				if (retval != PAM_SUCCESS)
