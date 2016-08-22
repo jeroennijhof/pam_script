@@ -1,3 +1,0 @@
-version=3
-
-https://github.com/jeroennijhof/pam_script/tags .*/v?(\d[\d\.]+)\.tar\.gz
