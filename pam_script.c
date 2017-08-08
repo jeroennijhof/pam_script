@@ -96,11 +96,11 @@ static void pam_script_setenv(const char *key, const char *value) {
 #elif HAVE_PUTENV
 	char	 buffer[BUFSIZE],
 		*str;
-	strncpy(buffer,key,BUFSIZE-2);
-	strcat(buffer,"=");
-	strncat(buffer,(value?value:""),BUFSIZE-strlen(buffer)-1);
-	if ((str = (char *) malloc(strlen(buffer)+1)) != NULL) {
-		strcpy(str,buffer);
+	if (snprintf(buffer, BUFSIZE, "%s=%s", key, value ? value : "") > BUFSIZE) {
+		// insufficient space
+		return;
+	}
+	if ((str = strdup(buffer)) != NULL) {
 		putenv(str);
 	} /* else {
 	     untrapped memory error - just do not add to environment
@@ -241,7 +241,7 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 {
 	int	retval;
 	char	*password;
-	
+
 	struct pam_message msg[1],*pmsg[1];
 	struct pam_response *response;
 
@@ -261,7 +261,7 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 		}
 		password = response[0].resp;
 	  	response[0].resp = NULL;
-	} 
+	}
 	else
 		return PAM_CONV_ERR;
 
@@ -312,7 +312,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
 
 	if (!password) {
 		retval = pam_script_set_authtok(pamh, flags, argc, argv, "Password: ", PAM_AUTHTOK);
-		if (retval != PAM_SUCCESS) 
+		if (retval != PAM_SUCCESS)
 			return retval;
 	}
 
