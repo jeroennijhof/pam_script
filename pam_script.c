@@ -345,6 +345,17 @@ int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc,
 
 /* --- password management --- */
 
+/*
+ * instead of memset for clearing memory, hopefully not being optimized out
+ * by the compiler
+ */
+static void safe_clearmem(char *mem, size_t size) {
+	size_t i;
+	for (i = 0; i < size; i++) {
+		mem[i] = 0;
+	}
+}
+
 PAM_EXTERN
 int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 		     const char **argv)
@@ -372,7 +383,7 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 		}
 
 		/*
-		 * Check if PAM_AUTHTOK is set by early pam modules and 
+		 * Check if PAM_AUTHTOK is set by early pam modules and
 		 * if not ask user for the new password.
 		 */
 		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
@@ -385,20 +396,28 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 			password = NULL;
 
 			retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password (again): ", PAM_AUTHTOK);
-			if (retval != PAM_SUCCESS)
+			if (retval != PAM_SUCCESS) {
+				safe_clearmem(new_pass1, sizeof(new_pass1));
 				return retval;
+			}
 			retval = pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
 			snprintf(new_pass2, BUFSIZE, "%s", password);
 			password = NULL;
 
-			/* Check if new password's are the same */
+			/* Check if new passwords are the same */
 			if (strcmp(new_pass1, new_pass2) != 0) {
 				retval = pam_script_senderr(pamh, flags, argc, argv,
 						"You must enter the same password twice.");
-				if (retval != PAM_SUCCESS)
-					return retval;
-				return PAM_AUTHTOK_ERR;
+
+				if (retval == PAM_SUCCESS)
+					retval = PAM_AUTHTOK_ERR;
 			}
+
+			safe_clearmem(new_pass1, sizeof(new_pass1));
+			safe_clearmem(new_pass2, sizeof(new_pass2));
+
+			if (retval != PAM_SUCCESS)
+				return PAM_AUTHTOK_ERR;
 		}
 		return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
 			user, PAM_AUTHTOK_ERR, argc, argv);
