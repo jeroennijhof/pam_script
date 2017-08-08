@@ -136,13 +136,11 @@ static int pam_script_exec(pam_handle_t *pamh,
 	int	retval = rv,
 		status,
 		i;
-	char	cmd[BUFSIZE];
+	char	cmd[BUFSIZE] = { '\0' };
 	char	**newargv;
 	struct stat fs;
 	const void *envval = NULL;
 	pid_t	child_pid = 0;
-
-	strncpy(cmd, PAM_SCRIPT_DIR, BUFSIZE - 1);
 
 	/* check for pam.conf options */
 	for (i = 0; i < argc; i++) {
@@ -156,10 +154,20 @@ static int pam_script_exec(pam_handle_t *pamh,
 					"invalid option: %s", argv[i]);
 		}
 		if (strncmp(argv[i],"dir=",4) == 0) {
-			if (*(argv[i] + 4)) { /* got new scriptdir */
-				strncpy(cmd,argv[i] + 4, BUFSIZE - 2);
+			const char *new_dir = argv[i] + 4;
+			const int MAX_DIR_LEN = BUFSIZE - 2;
+
+			if (*new_dir) { /* got new scriptdir */
+				if (snprintf(cmd, MAX_DIR_LEN, "%s", new_dir) > MAX_DIR_LEN) {
+					pam_script_syslog(LOG_ERR,"script dir %s exceeds maximum supported path length", new_dir);
+					cmd[0] = '\0';
+				}
 			}
 		}
+	}
+
+	if (cmd[0] == '\0') {
+		strncpy(cmd, PAM_SCRIPT_DIR, BUFSIZE - 1);
 	}
 
 	/* strip trailing '/' */
