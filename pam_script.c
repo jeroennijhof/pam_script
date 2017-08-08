@@ -156,7 +156,7 @@ static int pam_script_exec(pam_handle_t *pamh,
 					"invalid option: %s", argv[i]);
 		}
 		if (strncmp(argv[i],"dir=",4) == 0) {
-			if (argv[i] + 4) { /* got new scriptdir */
+			if (*(argv[i] + 4)) { /* got new scriptdir */
 				strncpy(cmd,argv[i] + 4, BUFSIZE - 2);
 			}
 		}
