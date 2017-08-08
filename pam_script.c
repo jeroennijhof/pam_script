@@ -173,6 +173,10 @@ static int pam_script_exec(pam_handle_t *pamh,
 	/* strip trailing '/' */
 	if (cmd[strlen(cmd)-1] == '/') cmd[strlen(cmd)-1] = '\0';
 	strcat(cmd,"/");
+	if (strlen(script) > (BUFSIZE - strlen(cmd) - 1)) {
+		pam_script_syslog(LOG_ERR,"script path %s/%s exceeds maximum supported path length", cmd, script);
+		return retval;
+	}
 	strncat(cmd,script,BUFSIZE-strlen(cmd)-1);
 
 	/* test for script existence first */
