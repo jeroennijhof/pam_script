@@ -129,6 +129,58 @@ static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 	return retval;
 }
 
+static int check_path_perms(const char *path) {
+
+	struct stat fs;
+	const mode_t ALL_EXEC_MASK = (S_IXUSR|S_IXGRP|S_IXOTH);
+
+	/*
+	 * note: checking security properties like this leaves us with a race
+	 * condition, because the stat()/execve() execution is not atomic.
+	 *
+	 * likely candidates for overcoming this would have been fexecve() or
+	 * execveat(). But both suffer from a side effect (at least on
+	 * Linux/glibc implementation) that causes scripts to be called like
+	 *
+	 * "bash /proc/self/fd/<num> <argv1> ..."
+	 *
+	 * This would break existing scripts that can't make out their
+	 * basename/dirname any more to base decisions on them.
+	 *
+	 * An explicit environment variable could be added that carries the
+	 * "real" basename but that would complicate things even more.
+	 */
+
+	/* test for script existence first */
+	if (stat(path, &fs) < 0) {
+		/* stat failure */
+		pam_script_syslog(LOG_ERR,"can not stat %s", path);
+		return 1;
+	}
+
+	if ((fs.st_mode & ALL_EXEC_MASK) != ALL_EXEC_MASK) {
+		/* script not executable at all levels */
+		pam_script_syslog(LOG_ALERT,
+			"path %s not fully executable", path);
+		return 1;
+	}
+	else if ((fs.st_mode & S_IWOTH) != 0) {
+		/* script is world writeable, probably not a good idea */
+		pam_script_syslog(LOG_ALERT,
+				"path %s is world-writeable, rejecting for "
+				"security reasons", path);
+		return 1;
+	}
+	else if (fs.st_uid != 0 || fs.st_gid != 0) {
+		/* script should be owned by root:root */
+		pam_script_syslog(LOG_ALERT,
+				"path %s is not owned by root:root, rejecting for security reasons", path);
+		return 1;
+	}
+
+	return 0;
+}
+
 static int pam_script_exec(pam_handle_t *pamh,
 	const char *type, const char *script, const char *user,
 	int rv, int argc, const char **argv) {
@@ -138,7 +190,6 @@ static int pam_script_exec(pam_handle_t *pamh,
 		i;
 	char	cmd[BUFSIZE] = { '\0' };
 	char	**newargv;
-	struct stat fs;
 	const void *envval = NULL;
 	pid_t	child_pid = 0;
 
@@ -180,6 +231,10 @@ static int pam_script_exec(pam_handle_t *pamh,
 		cmd[curlen - 1] = '\0';
 	}
 
+	/* check the base directory permissions */
+	if (check_path_perms(cmd) != 0)
+		return retval;
+
 	strcat(cmd,"/");
 
 	if (strlen(script) > (BUFSIZE - strlen(cmd) - 1)) {
@@ -188,19 +243,9 @@ static int pam_script_exec(pam_handle_t *pamh,
 	}
 	strncat(cmd,script,BUFSIZE-strlen(cmd)-1);
 
-	/* test for script existence first */
-	if (stat(cmd, &fs) < 0) {
-		/* stat failure */
-		pam_script_syslog(LOG_ERR,"can not stat %s", cmd);
+	/* check the script permissions */
+	if (check_path_perms(cmd) != 0)
 		return retval;
-	}
-	if ((fs.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH))
-	!= (S_IXUSR|S_IXGRP|S_IXOTH)) {
-		/* script not executable at all levels */
-		pam_script_syslog(LOG_ALERT,
-			"script %s not fully executable", cmd);
-		return retval;
-	}
 
 	/* Execute external program */
 	/* fork process */
