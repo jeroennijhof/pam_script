@@ -221,8 +221,10 @@ static int pam_script_exec(pam_handle_t *pamh,
 		PAM_SCRIPT_SETENV(PAM_OLDAUTHTOK);
 
 		/* construct newargv */
-		if (!(newargv = (char **) calloc(sizeof(char *), argc+2)))
-			return retval;
+		if (!(newargv = (char **) calloc(sizeof(char *), argc+2))) {
+			// for rationale see below
+			_exit(127);
+		}
 		newargv[0] = cmd;
 		for (i = 0; i < argc; i++) {
 			newargv[1+i] = (char *) argv[i];
@@ -231,6 +233,17 @@ static int pam_script_exec(pam_handle_t *pamh,
 		/* shouldn't get here, unless an error */
 		pam_script_syslog(LOG_ALERT,
 			"script %s exec failure", cmd);
+		/*
+		 * explicitly exit() here to avoid continuing execution of the
+		 * PAM stack in the forked process in an undefined manner.
+		 *
+		 * 127 is typically the exit code when something fundamentally
+		 * went wrong with starting a child process.
+		 *
+		 * use _exit() instead of exit() to avoid execution of any
+		 * cleanup code like atexit() handlers.
+		 */
+		_exit(127);
 		return retval;
 
 	default:				/* parent */
