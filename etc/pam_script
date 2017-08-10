@@ -19,6 +19,38 @@ basedir=`dirname $0`
 fname=`basename $0`
 PAMSCRIPTDIR=${PAMSCRIPTDIR:-$basedir/pam-script.d}
 
+goodperms () {
+	local path="$1"
+	stat_output=`/usr/bin/stat -c "%A:%u:%g" "$path"`
+	if [ $? -ne 0 ]; then
+		echo "$0: Could not stat path $path" 1>&2
+		return 1
+	fi
+
+	owner=`echo $stat_output | /usr/bin/cut -d ':' -f 2`
+	group=`echo $stat_output | /usr/bin/cut -d ':' -f 3`
+	world_write_bit=${stat_output:8:1}
+
+	if [ ${world_write_bit} != "-" -o "$owner" -ne 0 -o "$group" -ne 0 ]; then
+		echo "$0: Unsafe permissions for path $path; Rejecting execution." 1>&2
+		return 1
+	fi
+}
+
+runscript () {
+	script="$1"
+	shift
+
+	if [ ! -e "$script" ]; then
+		return 0
+	fi
+
+	goodperms "$script" || return 1
+
+	/bin/sh "$script" "$@"
+	return $?
+}
+
 if [ x"$fname" != x"pam_script" ]; then
 	# process files in pam-script.d/
 	mtype=''
@@ -32,10 +64,10 @@ if [ x"$fname" != x"pam_script" ]; then
 	*_ses_close)	mtype='_ses_close' ;;
 	esac
 
+	goodperms "$PAMSCRIPTDIR" || exit $PAM_SCRIPT_STATUS
+
 	for script in $PAMSCRIPTDIR/*$mtype; do
-		if [ -e $script ]; then
-			/bin/sh $script "$@" || PAM_SCRIPT_STATUS=1
-		fi
+		runscript "$script" $@ || PAM_SCRIPT_STATUS=1
 		export PAM_SCRIPT_STATUS
 	done
 	exit $PAM_SCRIPT_STATUS

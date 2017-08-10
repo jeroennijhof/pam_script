@@ -96,11 +96,11 @@ static void pam_script_setenv(const char *key, const char *value) {
 #elif HAVE_PUTENV
 	char	 buffer[BUFSIZE],
 		*str;
-	strncpy(buffer,key,BUFSIZE-2);
-	strcat(buffer,"=");
-	strncat(buffer,(value?value:""),BUFSIZE-strlen(buffer)-1);
-	if ((str = (char *) malloc(strlen(buffer)+1)) != NULL) {
-		strcpy(str,buffer);
+	if (snprintf(buffer, BUFSIZE, "%s=%s", key, value ? value : "") > BUFSIZE) {
+		// insufficient space
+		return;
+	}
+	if ((str = strdup(buffer)) != NULL) {
 		putenv(str);
 	} /* else {
 	     untrapped memory error - just do not add to environment
@@ -129,6 +129,58 @@ static int pam_script_get_user(pam_handle_t *pamh, const char **user) {
 	return retval;
 }
 
+static int check_path_perms(const char *path) {
+
+	struct stat fs;
+	const mode_t ALL_EXEC_MASK = (S_IXUSR|S_IXGRP|S_IXOTH);
+
+	/*
+	 * note: checking security properties like this leaves us with a race
+	 * condition, because the stat()/execve() execution is not atomic.
+	 *
+	 * likely candidates for overcoming this would have been fexecve() or
+	 * execveat(). But both suffer from a side effect (at least on
+	 * Linux/glibc implementation) that causes scripts to be called like
+	 *
+	 * "bash /proc/self/fd/<num> <argv1> ..."
+	 *
+	 * This would break existing scripts that can't make out their
+	 * basename/dirname any more to base decisions on them.
+	 *
+	 * An explicit environment variable could be added that carries the
+	 * "real" basename but that would complicate things even more.
+	 */
+
+	/* test for script existence first */
+	if (stat(path, &fs) < 0) {
+		/* stat failure */
+		pam_script_syslog(LOG_ERR,"can not stat %s", path);
+		return 1;
+	}
+
+	if ((fs.st_mode & ALL_EXEC_MASK) != ALL_EXEC_MASK) {
+		/* script not executable at all levels */
+		pam_script_syslog(LOG_ALERT,
+			"path %s not fully executable", path);
+		return 1;
+	}
+	else if ((fs.st_mode & S_IWOTH) != 0) {
+		/* script is world writeable, probably not a good idea */
+		pam_script_syslog(LOG_ALERT,
+				"path %s is world-writeable, rejecting for "
+				"security reasons", path);
+		return 1;
+	}
+	else if (fs.st_uid != 0 || fs.st_gid != 0) {
+		/* script should be owned by root:root */
+		pam_script_syslog(LOG_ALERT,
+				"path %s is not owned by root:root, rejecting for security reasons", path);
+		return 1;
+	}
+
+	return 0;
+}
+
 static int pam_script_exec(pam_handle_t *pamh,
 	const char *type, const char *script, const char *user,
 	int rv, int argc, const char **argv) {
@@ -136,13 +188,10 @@ static int pam_script_exec(pam_handle_t *pamh,
 	int	retval = rv,
 		status,
 		i;
-	char	cmd[BUFSIZE];
+	char	cmd[BUFSIZE] = { '\0' };
 	char	**newargv;
-	struct stat fs;
 	const void *envval = NULL;
 	pid_t	child_pid = 0;
-
-	strncpy(cmd, PAM_SCRIPT_DIR, BUFSIZE - 1);
 
 	/* check for pam.conf options */
 	for (i = 0; i < argc; i++) {
@@ -156,30 +205,47 @@ static int pam_script_exec(pam_handle_t *pamh,
 					"invalid option: %s", argv[i]);
 		}
 		if (strncmp(argv[i],"dir=",4) == 0) {
-			if (argv[i] + 4) { /* got new scriptdir */
-				strncpy(cmd,argv[i] + 4, BUFSIZE - 2);
+			const char *new_dir = argv[i] + 4;
+			const int MAX_DIR_LEN = BUFSIZE - 2;
+
+			if (*new_dir) { /* got new scriptdir */
+				if (snprintf(cmd, MAX_DIR_LEN, "%s", new_dir) > MAX_DIR_LEN) {
+					pam_script_syslog(LOG_ERR,"script dir %s exceeds maximum supported path length", new_dir);
+					cmd[0] = '\0';
+				}
 			}
 		}
 	}
 
+	if (cmd[0] == '\0') {
+		strncpy(cmd, PAM_SCRIPT_DIR, BUFSIZE - 1);
+	}
+
 	/* strip trailing '/' */
-	if (cmd[strlen(cmd)-1] == '/') cmd[strlen(cmd)-1] = '\0';
+	while (1) {
+		size_t curlen = strlen(cmd);
+
+		if (curlen == 0 || cmd[curlen-1] != '/')
+			break;
+
+		cmd[curlen - 1] = '\0';
+	}
+
+	/* check the base directory permissions */
+	if (check_path_perms(cmd) != 0)
+		return retval;
+
 	strcat(cmd,"/");
+
+	if (strlen(script) > (BUFSIZE - strlen(cmd) - 1)) {
+		pam_script_syslog(LOG_ERR,"script path %s/%s exceeds maximum supported path length", cmd, script);
+		return retval;
+	}
 	strncat(cmd,script,BUFSIZE-strlen(cmd)-1);
 
-	/* test for script existence first */
-	if (stat(cmd, &fs) < 0) {
-		/* stat failure */
-		pam_script_syslog(LOG_ERR,"can not stat %s", cmd);
+	/* check the script permissions */
+	if (check_path_perms(cmd) != 0)
 		return retval;
-	}
-	if ((fs.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH))
-	!= (S_IXUSR|S_IXGRP|S_IXOTH)) {
-		/* script not executable at all levels */
-		pam_script_syslog(LOG_ALERT,
-			"script %s not fully executable", cmd);
-		return retval;
-	}
 
 	/* Execute external program */
 	/* fork process */
@@ -200,8 +266,10 @@ static int pam_script_exec(pam_handle_t *pamh,
 		PAM_SCRIPT_SETENV(PAM_OLDAUTHTOK);
 
 		/* construct newargv */
-		if (!(newargv = (char **) calloc(sizeof(char *), argc+2)))
-			return retval;
+		if (!(newargv = (char **) calloc(sizeof(char *), argc+2))) {
+			// for rationale see below
+			_exit(127);
+		}
 		newargv[0] = cmd;
 		for (i = 0; i < argc; i++) {
 			newargv[1+i] = (char *) argv[i];
@@ -210,6 +278,17 @@ static int pam_script_exec(pam_handle_t *pamh,
 		/* shouldn't get here, unless an error */
 		pam_script_syslog(LOG_ALERT,
 			"script %s exec failure", cmd);
+		/*
+		 * explicitly exit() here to avoid continuing execution of the
+		 * PAM stack in the forked process in an undefined manner.
+		 *
+		 * 127 is typically the exit code when something fundamentally
+		 * went wrong with starting a child process.
+		 *
+		 * use _exit() instead of exit() to avoid execution of any
+		 * cleanup code like atexit() handlers.
+		 */
+		_exit(127);
 		return retval;
 
 	default:				/* parent */
@@ -241,7 +320,7 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 {
 	int	retval;
 	char	*password;
-	
+
 	struct pam_message msg[1],*pmsg[1];
 	struct pam_response *response;
 
@@ -261,7 +340,7 @@ static int pam_script_set_authtok(pam_handle_t *pamh, int flags,
 		}
 		password = response[0].resp;
 	  	response[0].resp = NULL;
-	} 
+	}
 	else
 		return PAM_CONV_ERR;
 
@@ -312,7 +391,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
 
 	if (!password) {
 		retval = pam_script_set_authtok(pamh, flags, argc, argv, "Password: ", PAM_AUTHTOK);
-		if (retval != PAM_SUCCESS) 
+		if (retval != PAM_SUCCESS)
 			return retval;
 	}
 
@@ -345,6 +424,17 @@ int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc,
 
 /* --- password management --- */
 
+/*
+ * instead of memset for clearing memory, hopefully not being optimized out
+ * by the compiler
+ */
+static void safe_clearmem(char *mem, size_t size) {
+	size_t i;
+	for (i = 0; i < size; i++) {
+		mem[i] = 0;
+	}
+}
+
 PAM_EXTERN
 int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 		     const char **argv)
@@ -372,7 +462,7 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 		}
 
 		/*
-		 * Check if PAM_AUTHTOK is set by early pam modules and 
+		 * Check if PAM_AUTHTOK is set by early pam modules and
 		 * if not ask user for the new password.
 		 */
 		pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
@@ -385,20 +475,28 @@ int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc,
 			password = NULL;
 
 			retval = pam_script_set_authtok(pamh, flags, argc, argv, "New password (again): ", PAM_AUTHTOK);
-			if (retval != PAM_SUCCESS)
+			if (retval != PAM_SUCCESS) {
+				safe_clearmem(new_pass1, sizeof(new_pass1));
 				return retval;
+			}
 			retval = pam_get_item(pamh, PAM_AUTHTOK, (void*) &password);
 			snprintf(new_pass2, BUFSIZE, "%s", password);
 			password = NULL;
 
-			/* Check if new password's are the same */
+			/* Check if new passwords are the same */
 			if (strcmp(new_pass1, new_pass2) != 0) {
 				retval = pam_script_senderr(pamh, flags, argc, argv,
 						"You must enter the same password twice.");
-				if (retval != PAM_SUCCESS)
-					return retval;
-				return PAM_AUTHTOK_ERR;
+
+				if (retval == PAM_SUCCESS)
+					retval = PAM_AUTHTOK_ERR;
 			}
+
+			safe_clearmem(new_pass1, sizeof(new_pass1));
+			safe_clearmem(new_pass2, sizeof(new_pass2));
+
+			if (retval != PAM_SUCCESS)
+				return PAM_AUTHTOK_ERR;
 		}
 		return pam_script_exec(pamh, "password", PAM_SCRIPT_PASSWD,
 			user, PAM_AUTHTOK_ERR, argc, argv);
