@@ -29,7 +29,7 @@ goodperms () {
 
 	owner=`echo $stat_output | /usr/bin/cut -d ':' -f 2`
 	group=`echo $stat_output | /usr/bin/cut -d ':' -f 3`
-	world_write_bit=${stat_output:8:1}
+	world_write_bit=`echo $stat_output | /usr/bin/cut -c 9`
 
 	if [ ${world_write_bit} != "-" -o "$owner" -ne 0 -o "$group" -ne 0 ]; then
 		echo "$0: Unsafe permissions for path $path; Rejecting execution." 1>&2
